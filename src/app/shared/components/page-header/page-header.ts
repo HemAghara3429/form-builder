@@ -1,9 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-page-header',
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './page-header.html',
   styleUrl: './page-header.scss',
 })
-export class PageHeader {}
+export class PageHeader {
+  @Input() title: string = '';
+  @Input() subtitle?: string;
+  @Input() showBackButton: boolean = false;
+  @Input() backButtonUrl: string = '/';
+}

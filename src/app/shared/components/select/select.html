@@ -1,1 +1,22 @@
-<p>select works!</p>
+<div class="form-group">
+  <label *ngIf="label" [for]="id" class="form-label">
+    <app-icon *ngIf="iconName" [name]="iconName" [size]="iconSize"></app-icon>
+    {{ label }}
+    <span *ngIf="required" class="required">*</span>
+  </label>
+  <select
+    [id]="id"
+    [value]="selectedValue"
+    [disabled]="disabled"
+    class="form-control"
+    [class.error]="errorMessage"
+    (change)="onSelectChange($event)"
+    (blur)="onBlur()"
+  >
+    <option value="" disabled selected>{{ placeholder }}</option>
+    <option *ngFor="let option of options" [value]="option.id">
+      {{ option.label }}
+    </option>
+  </select>
+  <small *ngIf="errorMessage" class="error-message">{{ errorMessage }}</small>
+</div>

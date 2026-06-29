@@ -1,0 +1,82 @@
+// Textarea Variables
+$textarea-border-color: #d1d5db;
+$textarea-border-focus: #0066cc;
+$textarea-background: #ffffff;
+$textarea-text-color: #1f2937;
+$textarea-placeholder-color: #9ca3af;
+$textarea-error-color: #dc3545;
+$textarea-disabled-bg: #f3f4f6;
+$textarea-disabled-color: #9ca3af;
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.form-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: $textarea-text-color;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  app-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .required {
+    color: $textarea-error-color;
+    font-weight: bold;
+  }
+}
+
+.form-control {
+  width: 119%;
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1px solid $textarea-border-color;
+  border-radius: 4px;
+  background-color: $textarea-background;
+  color: $textarea-text-color;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  resize: vertical;
+
+  &::placeholder {
+    color: $textarea-placeholder-color;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $textarea-border-focus;
+    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+  }
+
+  &:disabled {
+    background-color: $textarea-disabled-bg;
+    color: $textarea-disabled-color;
+    cursor: not-allowed;
+    border-color: $textarea-border-color;
+    resize: none;
+  }
+
+  &.error {
+    border-color: $textarea-error-color;
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+    }
+  }
+}
+
+.error-message {
+  font-size: 12px;
+  color: $textarea-error-color;
+  margin-top: 4px;
+}
