@@ -8,7 +8,9 @@ import { Select, SelectOption } from '../../../../shared/components/select/selec
 import { Textarea } from '../../../../shared/components/textarea/textarea';            //textarea component import for the text area.
 import { IconComponent } from '../../../../shared/components/icon/icon';               //icon component import for the icons.
 
-import { FormSetupService } from '../../services/form-setup.service';                       
+import { FormSetupService } from '../../services/form-setup.service';          
+
+//here interface add using FormSetupData.
 import { FormSetupData, BranchOption, SectionOption, AcademicYearOption, FormStatus } from '../../models/form-setup.model';
 
 @Component({
@@ -132,6 +134,8 @@ export class FormSetup implements OnInit {
     ];
   }
 
+  //when click on the submit button the this method call
+
   onSubmit(): void {
     //please require the all filed fill before the submit the form.
 
@@ -142,7 +146,7 @@ export class FormSetup implements OnInit {
 
     this.isSubmitting = true;
     this.successMessage = '';
-    this.errorMessage = '';
+    this.errorMessage = '';//inital provide the empty message.
 
     const formData: FormSetupData = this.formSetupForm.value;
 

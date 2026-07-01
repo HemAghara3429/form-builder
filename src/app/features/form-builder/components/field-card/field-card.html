@@ -1,0 +1,210 @@
+<div class="field-card" [class.collapsed]="field.collapsed">
+  <div class="field-card-header">
+    <div class="header-left">
+      <span
+        class="type-icon"
+        [style.background]="paletteMeta?.iconBg"
+        [style.color]="paletteMeta?.iconColor"
+      >
+        <mat-icon>{{ paletteMeta?.icon }}</mat-icon>
+      </span>
+      <span class="type-name">{{ typeLabel }}</span>
+      <span class="required-badge" *ngIf="field.required">Required</span>
+    </div>
+    <button type="button" class="collapse-btn" (click)="toggleCollapse()" aria-label="Toggle field">
+      <mat-icon>{{ field.collapsed ? 'expand_more' : 'expand_less' }}</mat-icon>
+    </button>
+  </div>
+
+  <div class="field-card-body" *ngIf="!field.collapsed">
+    <div class="config-row">
+      <div class="config-col">
+        <label class="config-label">Field Label <span class="req">*</span></label>
+        <input
+          type="text"
+          class="config-input"
+          placeholder="Enter Field Label Name"
+          [ngModel]="field.label"
+          (ngModelChange)="onLabelChange($event)"
+        />
+      </div>
+      <div class="config-col" *ngIf="hasPlaceholder">
+        <label class="config-label">Placeholder <span class="req">*</span></label>
+        <input
+          type="text"
+          class="config-input"
+          placeholder="Placeholder"
+          [ngModel]="field.placeholder"
+          (ngModelChange)="onPlaceholderChange($event)"
+        />
+      </div>
+      <div class="config-col" *ngIf="field.type === FieldType.IMAGE">
+        <label class="config-label">Image URL</label>
+        <input
+          type="text"
+          class="config-input"
+          placeholder="Enter image URL"
+          [ngModel]="field.imageUrl"
+          (ngModelChange)="onImageUrlChange($event)"
+        />
+      </div>
+      <div class="config-col" *ngIf="field.type === FieldType.TERMS_CONDITION">
+        <label class="config-label">Terms Text</label>
+        <input
+          type="text"
+          class="config-input"
+          placeholder="Terms and conditions text"
+          [ngModel]="field.termsText"
+          (ngModelChange)="onTermsChange($event)"
+        />
+      </div>
+      <div class="config-col" *ngIf="field.type === FieldType.RATING_STAR || field.type === FieldType.RATING_NUMBER">
+        <label class="config-label">Max Rating</label>
+        <input
+          type="number"
+          class="config-input"
+          min="1"
+          max="20"
+          [ngModel]="field.maxRating"
+          (ngModelChange)="onMaxRatingChange(+$event)"
+        />
+      </div>
+    </div>
+
+    <div class="description-row" *ngIf="field.description !== undefined || showMenu">
+      <label class="config-label">Description</label>
+      <input
+        type="text"
+        class="config-input"
+        placeholder="Add a description (optional)"
+        [ngModel]="field.description ?? ''"
+        (ngModelChange)="onDescriptionChange($event)"
+      />
+    </div>
+
+    <!-- Options for checkbox, dropdown, radio -->
+    <div class="options-section" *ngIf="hasOptions">
+      <div class="option-row" *ngFor="let option of field.options">
+        <mat-icon class="option-icon">
+          {{ field.type === FieldType.CHECKBOX ? 'check_box_outline_blank' : field.type === FieldType.RADIO ? 'radio_button_unchecked' : 'arrow_drop_down' }}
+        </mat-icon>
+        <input
+          type="text"
+          class="config-input option-input"
+          placeholder="Add Option"
+          [ngModel]="option.label"
+          (ngModelChange)="updateOption.emit({ optionId: option.id, label: $event })"
+        />
+        <button
+          type="button"
+          class="remove-option-btn"
+          (click)="removeOption.emit(option.id)"
+          [disabled]="field.options.length <= 1"
+          aria-label="Remove option"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <button type="button" class="add-option-btn" (click)="addOption.emit()">
+        Add Option
+      </button>
+    </div>
+
+    <!-- Field preview -->
+    <div class="field-preview">
+      <label class="preview-label" *ngIf="field.label">{{ field.label }}<span *ngIf="field.required" class="req"> *</span></label>
+      <p class="preview-desc" *ngIf="field.description">{{ field.description }}</p>
+
+      <ng-container [ngSwitch]="field.type">
+        <input
+          *ngSwitchCase="FieldType.SINGLE_LINE"
+          type="text"
+          class="preview-control"
+          [placeholder]="field.placeholder || 'Short answer text'"
+          disabled
+        />
+        <textarea
+          *ngSwitchCase="FieldType.PARAGRAPH"
+          class="preview-control preview-textarea"
+          [placeholder]="field.placeholder || 'Long answer text'"
+          disabled
+          rows="3"
+        ></textarea>
+        <div *ngSwitchCase="FieldType.CHECKBOX" class="preview-options">
+          <label class="preview-option" *ngFor="let opt of field.options">
+            <input type="checkbox" disabled />
+            <span>{{ opt.label }}</span>
+          </label>
+        </div>
+        <select *ngSwitchCase="FieldType.DROPDOWN" class="preview-control" disabled>
+          <option>{{ field.placeholder || 'Select an option' }}</option>
+          <option *ngFor="let opt of field.options">{{ opt.label }}</option>
+        </select>
+        <div *ngSwitchCase="FieldType.RADIO" class="preview-options">
+          <label class="preview-option" *ngFor="let opt of field.options">
+            <input type="radio" [name]="field.id" disabled />
+            <span>{{ opt.label }}</span>
+          </label>
+        </div>
+        <input
+          *ngSwitchCase="FieldType.DATE_PICKER"
+          type="date"
+          class="preview-control"
+          disabled
+        />
+        <input
+          *ngSwitchCase="FieldType.TIME_PICKER"
+          type="time"
+          class="preview-control"
+          disabled
+        />
+        <div *ngSwitchCase="FieldType.UPLOAD_FILE" class="preview-upload">
+          <mat-icon>cloud_upload</mat-icon>
+          <span>Click or drag file to upload</span>
+        </div>
+        <div *ngSwitchCase="FieldType.RATING_STAR" class="preview-stars">
+          <mat-icon *ngFor="let s of getStarArray()" class="star-icon">star_border</mat-icon>
+        </div>
+        <div *ngSwitchCase="FieldType.RATING_NUMBER" class="preview-numbers">
+          <span *ngFor="let n of getNumberArray()" class="number-btn">{{ n }}</span>
+        </div>
+        <div *ngSwitchCase="FieldType.IMAGE" class="preview-image">
+          <img *ngIf="field.imageUrl" [src]="field.imageUrl" alt="Field image" />
+          <div *ngIf="!field.imageUrl" class="image-placeholder">
+            <mat-icon>image</mat-icon>
+            <span>Image preview</span>
+          </div>
+        </div>
+        <label *ngSwitchCase="FieldType.TERMS_CONDITION" class="preview-option">
+          <input type="checkbox" disabled />
+          <span>{{ field.termsText || 'I agree to the terms and conditions.' }}</span>
+        </label>
+      </ng-container>
+    </div>
+
+    <div class="field-card-footer">
+      <button type="button" class="footer-btn" (click)="duplicate.emit()" title="Duplicate">
+        <mat-icon>content_copy</mat-icon>
+      </button>
+      <button type="button" class="footer-btn delete-btn" (click)="remove.emit()" title="Delete">
+        <mat-icon>delete</mat-icon>
+      </button>
+      <div class="footer-spacer"></div>
+      <span class="required-label">Required</span>
+      <label class="toggle-switch">
+        <input type="checkbox" [checked]="field.required" (change)="toggleRequired()" />
+        <span class="toggle-slider"></span>
+      </label>
+      <div class="menu-wrapper">
+        <button type="button" class="footer-btn" (click)="toggleMenu($event)" title="More options">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <div class="context-menu" *ngIf="showMenu">
+          <button type="button" (click)="closeMenu()">Show</button>
+          <button type="button" (click)="onDescriptionChange(field.description ?? ''); closeMenu()">Description</button>
+          <button type="button" (click)="closeMenu()">Response Validation</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

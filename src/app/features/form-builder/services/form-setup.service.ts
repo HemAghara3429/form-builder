@@ -16,7 +16,7 @@ export class FormSetupService {
   private readonly API_URL = '/api/forms';
   private formSetupData$ = new BehaviorSubject<FormSetupData | null>(null);
 
-  //branch option data for the form setup
+  //branch option data for the form  
   private mockBranches: BranchOption[] = [
     { id: '1', name: 'Information Technology' },
     { id: '2', name: 'Computer Science' },
