@@ -1,0 +1,93 @@
+// Button Variables
+$button-primary-bg: #0066cc;
+$button-primary-hover: #0052a3;
+$button-primary-color: #ffffff;
+
+$button-secondary-bg: #6c757d;
+$button-secondary-hover: #5a6268;
+$button-secondary-color: #ffffff;
+
+$button-danger-bg: #dc3545;
+$button-danger-hover: #c82333;
+$button-danger-color: #ffffff;
+
+$button-disabled-bg: #e9ecef;
+$button-disabled-color: #6c757d;
+
+// Button Base Styles
+button {
+  font-family: inherit;
+  font-weight: 500;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 8px 16px;
+  font-size: 14px;
+
+  &:disabled {
+    background-color: $button-disabled-bg;
+    color: $button-disabled-color;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  // Variants
+  &.btn-primary {
+    background-color: $button-primary-bg;
+    color: $button-primary-color;
+
+    &:not(:disabled):hover {
+      background-color: $button-primary-hover;
+      box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);
+    }
+
+    &:not(:disabled):active {
+      transform: scale(0.98);
+    }
+  }
+
+  &.btn-secondary {
+    background-color: $button-secondary-bg;
+    color: $button-secondary-color;
+
+    &:not(:disabled):hover {
+      background-color: $button-secondary-hover;
+      box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+    }
+
+    &:not(:disabled):active {
+      transform: scale(0.98);
+    }
+  }
+
+  &.btn-danger {
+    background-color: $button-danger-bg;
+    color: $button-danger-color;
+
+    &:not(:disabled):hover {
+      background-color: $button-danger-hover;
+      box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+    }
+
+    &:not(:disabled):active {
+      transform: scale(0.98);
+    }
+  }
+
+  // Sizes
+  &.btn-small {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  &.btn-medium {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+
+  &.btn-large {
+    padding: 12px 24px;
+    font-size: 16px;
+  }
+}

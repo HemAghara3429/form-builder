@@ -1,0 +1,24 @@
+<div class="form-group">
+  <label *ngIf="label" [for]="id" class="form-label">
+    <app-icon *ngIf="iconName" [name]="iconName" [size]="iconSize"></app-icon>
+    {{ label }}
+    <span *ngIf="required" class="required">*</span>
+  </label>
+  <div class="input-wrapper">
+    <input
+      [id]="id"
+      [type]="type"
+      [value]="value"
+      [placeholder]="placeholder"
+      [disabled]="disabled"
+      [attr.maxlength]="maxLength"
+      class="form-control"
+      [class.error]="errorMessage"
+      (input)="onInputChange($event)"
+      (blur)="onBlur()"
+      (focus)="onFocus()"
+    />
+    <span *ngIf="icon" class="input-icon">{{ icon }}</span>
+  </div>
+  <small *ngIf="errorMessage" class="error-message">{{ errorMessage }}</small>
+</div>

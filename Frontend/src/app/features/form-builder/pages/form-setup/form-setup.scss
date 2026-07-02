@@ -1,0 +1,640 @@
+// Design tokens
+$brand-primary: #01329c;
+$brand-primary-hover: #012070;
+$brand-primary-light: #e8f0fe;
+$danger-color: #dc3545;
+$success-color: #28a745;
+$text-dark: #1f2937;
+$text-muted: #6b7280;
+$text-light: #9ca3af;
+$border-color: #e5e7eb;
+$border-input: #d1d5db;
+$background-page: #f3f4f6;
+$background-tab: #f8fafc;
+$white: #ffffff;
+
+// Form Setup Container
+.form-setup-container {
+  min-height: 100vh;
+  background-color: $background-page;
+  padding: 24px;
+  box-sizing: border-box;
+
+  * {
+    box-sizing: border-box;
+  }
+}
+
+// Header
+.form-setup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 auto 16px;
+  background-color: $white;
+  padding: 16px 24px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 100%;
+
+  .page-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: $text-dark;
+    margin: 0;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 10px;
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+
+      app-icon {
+        display: flex;
+        align-items: center;
+      }
+
+      &.btn-default {
+        background-color: $white;
+        color: $brand-primary;
+        border: 1px solid $brand-primary;
+
+        &:hover {
+          background-color: $brand-primary-light;
+        }
+      }
+
+      &.btn-primary {
+        background-color: $brand-primary;
+        color: $white;
+        border: 1px solid $brand-primary;
+
+        &:hover {
+          background-color: $brand-primary-hover;
+          box-shadow: 0 2px 8px rgba(1, 50, 156, 0.25);
+        }
+      }
+    }
+  }
+}
+
+// Main wrapper
+.main-div {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+// Tabs Navigation
+.tabs-navigation {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 0;
+  background-color: $white;
+  border-radius: 8px 8px 0 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  padding: 12px 24px;
+  min-height: 64px;
+
+  .tab-wrapper {
+    flex: 1 1 520px;
+    min-width: 0;
+    max-width: 100%;
+    display: flex;
+    align-items: stretch;
+    background: $white;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .tab-item {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    padding: 0 20px;
+    min-height: 40px;
+    background: $background-tab;
+    border-bottom: 2px solid transparent;
+    color: $text-muted;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    user-select: none;
+
+    .tab-text {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+
+    app-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      color: inherit;
+    }
+
+    &:focus-visible {
+      outline: 2px solid rgba(1, 50, 156, 0.35);
+      outline-offset: -2px;
+    }
+
+    &.active {
+      background: $white;
+      color: $brand-primary;
+      border-bottom-color: $brand-primary;
+
+      app-icon {
+        color: $brand-primary;
+      }
+
+      .tab-text {
+        color: $brand-primary;
+      }
+    }
+
+    &.disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+  }
+}
+
+// Action buttons (tab bar)
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.btn-cancel,
+.btn-save {
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 4px;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s ease, opacity 0.2s ease;
+  white-space: nowrap;
+
+  app-icon {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(1, 50, 156, 0.35);
+    outline-offset: 2px;
+  }
+}
+
+.btn-cancel {
+  background: #e6e6e6;
+  color: #4b5563;
+
+  &:hover:not(:disabled) {
+    background: #d9d9d9;
+  }
+}
+
+.btn-save {
+  background: $brand-primary;
+  color: $white;
+
+  &:hover:not(:disabled) {
+    background: $brand-primary-hover;
+  }
+}
+
+// Form Content
+.form-setup-content {
+  background-color: $white;
+  padding: 28px 24px 32px;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  margin: 0 auto;
+}
+
+// Alert Messages
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  animation: slideDown 0.3s ease;
+  border-left: 4px solid;
+
+  app-icon {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  &.alert-success {
+    background-color: #f0fdf4;
+    color: #166534;
+    border-left-color: $success-color;
+  }
+
+  &.alert-error {
+    background-color: #fef2f2;
+    color: #991b1b;
+    border-left-color: $danger-color;
+  }
+}
+
+// Polished success notice (used for "save/submit success" message)
+.notice {
+  display: grid;
+  grid-template-columns: 40px 1fr 32px;
+  gap: 12px;
+  align-items: start;
+  padding: 14px 14px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  border: 1px solid $border-color;
+  box-shadow: 0 6px 18px rgba(17, 24, 39, 0.06);
+  animation: slideDown 0.3s ease;
+
+  .notice-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .notice-body {
+    min-width: 0;
+  }
+
+  .notice-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: 2px;
+    color: $text-dark;
+  }
+
+  .notice-message {
+    font-size: 14px;
+    line-height: 1.35;
+    color: $text-muted;
+    word-break: break-word;
+  }
+
+  .notice-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.05s ease;
+
+    &:hover {
+      background: rgba(15, 23, 42, 0.04);
+      border-color: rgba(15, 23, 42, 0.08);
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+
+    &:focus-visible {
+      outline: 2px solid rgba(1, 50, 156, 0.35);
+      outline-offset: 2px;
+    }
+  }
+
+  &.notice-success {
+    background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%);
+    border-color: rgba(34, 197, 94, 0.25);
+
+    .notice-icon {
+      background: rgba(34, 197, 94, 0.12);
+      color: #166534;
+    }
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 36px 1fr 32px;
+    .notice-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+    }
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Form Setup Form
+.form-setup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  // Reset shared component bottom margins inside this form
+  ::ng-deep .form-group {
+    margin-bottom: 0;
+  }
+
+  // Keep label height consistent (prevents "extra gap" when long labels wrap)
+  ::ng-deep .form-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+// 80% width fields (Description + Success/Confirmation messages)
+.field-width-80 {
+  width: 80%;
+  max-width: 80%;
+
+  // Default: keep left aligned inside grid columns
+  margin: 0;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+// Tiny baseline tweak so textarea label icons match other labels
+.form-setup-form {
+  ::ng-deep app-textarea .form-label app-icon {
+    transform: translateY(1px);
+  }
+}
+
+// Form Row (two-column grid)
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px 32px;
+  align-items: start;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .form-col {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+}
+
+// Form Status group
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 0;
+}
+
+.form-label {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: $text-dark;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  app-icon {
+    display: flex;
+    align-items: center;
+    color: $text-dark;
+  }
+
+  .required {
+    color: $danger-color;
+    font-weight: 600;
+  }
+}
+
+// Segmented status toggle (Figma style)
+.status-toggle {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-height: 42px;
+}
+
+.status-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 1px solid $border-input;
+  border-radius: 6px;
+  background: $white;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  user-select: none;
+
+  input[type='radio'] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+  }
+
+  .status-indicator {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid $border-input;
+    background: $white;
+    flex-shrink: 0;
+    position: relative;
+    transition: border-color 0.2s ease;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: $brand-primary;
+      transition: transform 0.2s ease;
+    }
+  }
+
+  .status-text {
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: $text-muted;
+    white-space: nowrap;
+  }
+
+  &:hover:not(.selected) {
+    border-color: #c5cdd8;
+  }
+
+  &.selected {
+    background: $brand-primary-light;
+    border-color: $brand-primary;
+
+    .status-indicator {
+      border-color: $brand-primary;
+
+      &::after {
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+
+    .status-text {
+      color: $brand-primary;
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 992px) {
+  .tabs-navigation {
+    flex-wrap: wrap;
+    border-radius: 8px;
+    margin-bottom: 16px;
+
+    .tab-wrapper {
+      max-width: 100%;
+      width: 100%;
+      order: 1;
+    }
+
+    .action-buttons {
+      width: 100%;
+      justify-content: flex-end;
+      order: 2;
+      padding-left: 0;
+    }
+  }
+
+  .form-setup-content {
+    border-radius: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .form-setup-container {
+    padding: 16px;
+  }
+
+  .form-setup-header {
+    flex-direction: column;
+    gap: 14px;
+    align-items: flex-start;
+
+    .page-title {
+      font-size: 18px;
+    }
+
+    .header-actions {
+      width: 100%;
+
+      .btn {
+        flex: 1;
+      }
+    }
+  }
+
+  .tabs-navigation {
+    padding: 10px 12px;
+
+    .tab-item {
+      padding: 0 12px;
+      justify-content: center;
+
+      .tab-text {
+        font-size: 13px;
+      }
+    }
+  }
+
+  .form-setup-content {
+    padding: 20px 16px;
+  }
+
+  .status-toggle {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .status-option {
+    justify-content: flex-start;
+  }
+}

@@ -1,0 +1,60 @@
+<div class="builder-sidebar">
+  <h3 class="sidebar-title">Custom Elements</h3>
+
+  <div class="search-box">
+    <mat-icon class="search-icon">search</mat-icon>
+    <input
+      type="text"
+      class="search-input"
+      placeholder="Search Name Here"
+      [(ngModel)]="searchQuery"
+    />
+    <button
+      type="button"
+      class="clear-btn"
+      *ngIf="searchQuery"
+      (click)="clearSearch()"
+      aria-label="Clear search"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div
+    class="palette-grid"
+    cdkDropList
+    id="palette-drop-list"
+    [cdkDropListData]="filteredPalette"
+    [cdkDropListConnectedTo]="[connectedDropListId]"
+    cdkDropListSortingDisabled
+    (cdkDropListDropped)="onPaletteDrop($event)"
+  >
+    <div
+      class="palette-item"
+      *ngFor="let item of filteredPalette"
+      cdkDrag
+      [cdkDragData]="item"
+      (click)="addFieldByClick(item, $event)"
+    >
+      <div class="palette-item-content" *cdkDragPlaceholder></div>
+      <div class="drag-preview" *cdkDragPreview>
+        <span
+          class="palette-icon"
+          [style.background]="item.iconBg"
+          [style.color]="item.iconColor"
+        >
+          <mat-icon>{{ item.icon }}</mat-icon>
+        </span>
+        <span class="palette-label">{{ item.label }}</span>
+      </div>
+      <span
+        class="palette-icon"
+        [style.background]="item.iconBg"
+        [style.color]="item.iconColor"
+      >
+        <mat-icon>{{ item.icon }}</mat-icon>
+      </span>
+      <span class="palette-label">{{ item.label }}</span>
+    </div>
+  </div>
+</div>
