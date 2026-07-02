@@ -154,17 +154,18 @@ export class FormSetup implements OnInit {
   //when click on the submit button the this method call
 
   onSubmit(): void {
-    //please require the all filed fill before the submit the form.
-
+    //please require the all filed fill before the submit the form. (all filed are required)
     if (this.formSetupForm.invalid) {
       this.errorMessage = 'Please fill all required fields';
       return;
     }
 
-    this.isSubmitting = true;
+    this.isSubmitting = true;  //submit then change value as true.
     this.successMessage = '';
     this.errorMessage = '';//inital provide the empty message.
 
+    //FormSetupData  use the interface for the form data.
+    //getrawvalue:built in method for the form
     const formData: FormSetupData = {
       ...this.formSetupForm.getRawValue(),
       branch: this.getOptionLabel(this.branches, this.formSetupForm.get('branch')?.value ?? ''),
@@ -190,6 +191,10 @@ export class FormSetup implements OnInit {
   }
 
   //when cancel button click then this method will be called
+  //formSetupService:clearFormsetupData() method called and clean the form data from the local storage.
+  //reset is the built in method for the form group.
+  //sucessmessage and error message will be empty.
+  //navigate to the home page.
   onCancel(): void {
     this.formSetupService.clearFormSetupData();
     this.formSetupForm.reset(); //when click on the cancel button here all filed will be empty..
@@ -199,6 +204,7 @@ export class FormSetup implements OnInit {
   }
 
   //when success message show then this method will be called
+  //here when click on the close button then success message will be empty.
   dismissSuccess(): void {
     this.successMessage = '';
   }

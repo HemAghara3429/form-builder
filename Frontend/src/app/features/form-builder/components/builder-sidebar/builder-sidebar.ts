@@ -19,12 +19,14 @@ export class BuilderSidebar {
 
   constructor(private formBuilderState: FormBuilderStateService) {}
 
+  //filteredpalette here base on the search here filter the palette and return the values.
+  //filter method use to filter the value base on the search query.
   get filteredPalette(): PaletteItem[] {
     const q = this.searchQuery.trim().toLowerCase();
     if (!q) return this.palette;
     return this.palette.filter((item) => item.label.toLowerCase().includes(q));
   }
-
+//method to clear the search text when user click on the cross button
   clearSearch(): void {
     this.searchQuery = '';
   }
@@ -33,6 +35,9 @@ export class BuilderSidebar {
     // Drops back onto palette are ignored; canvas handles new field creation.
   }
 
+  //when user click on the left side here addFieldByclick then this method call.
+  //this function nothing to any type of return value.
+  //FormBuilderStateService inside the addfiled method call when the field add...
   addFieldByClick(item: PaletteItem, event: MouseEvent): void {
     if ((event.target as HTMLElement).closest('.cdk-drag-dragging')) return;
     this.formBuilderState.addField(item.type);

@@ -1,14 +1,19 @@
+<!-- form builder sidebar component -->
+
 <div class="builder-sidebar">
   <h3 class="sidebar-title">Custom Elements</h3>
 
   <div class="search-box">
+    <!-- material icon for the search -->
     <mat-icon class="search-icon">search</mat-icon>
+    <!-- when user try to search here searchQuery is updated -->
     <input
       type="text"
       class="search-input"
       placeholder="Search Name Here"
       [(ngModel)]="searchQuery"
     />
+    <!-- when user click on the close button here search is cleared .clearsearch method call -->
     <button
       type="button"
       class="clear-btn"
@@ -29,6 +34,7 @@
     cdkDropListSortingDisabled
     (cdkDropListDropped)="onPaletteDrop($event)"
   >
+  <!-- filteredPalette is the array here line by line print in left side -->
     <div
       class="palette-item"
       *ngFor="let item of filteredPalette"

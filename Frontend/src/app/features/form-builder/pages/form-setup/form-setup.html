@@ -1,9 +1,10 @@
 <div class="form-setup-container">
-  <!-- Header --> 
+  <!-- Header -->
   <div class="form-setup-header">
     <h1 class="page-title">FORM BUILDER</h1>
     <div class="header-actions">
       <button type="button" class="btn btn-default">
+        <!-- icon component use you just name required -->
         <app-icon name="share-2" size="small"></app-icon>
         <span>Share</span>
       </button>
@@ -19,6 +20,7 @@
     <div class="tabs-navigation">
       <div class="tab-wrapper" role="tablist" aria-label="Form builder steps">
         <div class="tab-item active" role="tab" aria-selected="true" tabindex="0">
+          <!-- icon component use you just name required -->
           <app-icon name="file-text" size="medium"></app-icon>
           <span class="tab-text">Form Setup</span>
         </div>
@@ -31,7 +33,7 @@
           <span class="tab-text">Integration Code</span>
         </div>
       </div>
-
+<!-- cancel button here oncancel method call when click on the cancel button -->
       <div class="action-buttons">
         <button type="button" class="btn-cancel" (click)="onCancel()">
           <app-icon name="x" size="small"></app-icon>
@@ -53,34 +55,39 @@
         </div>
         <div class="notice-body">
           <div class="notice-title">Saved</div>
+          <!-- success message show when the form submit successfully -->
           <div class="notice-message">{{ successMessage }}</div>
         </div>
+        <!-- when the user click on cross button disable the success message. -->
         <button type="button" class="notice-close" (click)="dismissSuccess()" aria-label="Dismiss success message">
           <app-icon name="x" size="small"></app-icon>
         </button>
       </div>
 
       <!-- Error Message -->
+       <!-- error message when the form is not submit properly -->
       <div *ngIf="errorMessage" class="alert alert-error">
         <app-icon name="x" size="small"></app-icon>
         <span>{{ errorMessage }}</span>
       </div>
 
       <!-- Form -->
+       <!-- when click on the submit button here onsubmit method call -->
       <form id="formSetupForm" [formGroup]="formSetupForm" (ngSubmit)="onSubmit()" class="form-setup-form">
         <!-- Row 1: Form Name | Branch -->
         <div class="form-row">
           <div class="form-col">
+            <!-- app input here get method:here pass the data from parent component to child component -->
             <app-input [value]="formSetupForm.get('formName')?.value"
-              (valueChange)="formSetupForm.patchValue({formName: $event})" label="Form Name"
-              iconName="file-text" placeholder="Enter your form name" [required]="true" [errorMessage]="
+              (valueChange)="formSetupForm.patchValue({formName: $event})" label="Form Name" iconName="file-text"
+              placeholder="Enter your form name" [required]="true" [errorMessage]="
               isFieldInvalid('formName') ? 'Form name is required (min 3 chars)' : ''
             "></app-input>
           </div>
           <div class="form-col">
             <app-select [selectedValue]="formSetupForm.get('branch')?.value"
-              (selectionChange)="formSetupForm.patchValue({branch: $event})" label="Branch" iconName="building" placeholder="Select Branch"
-              [options]="branches" [required]="true" [errorMessage]="
+              (selectionChange)="formSetupForm.patchValue({branch: $event})" label="Branch" iconName="building"
+              placeholder="Select Branch" [options]="branches" [required]="true" [errorMessage]="
               isFieldInvalid('branch') ? 'Branch is required' : ''
             "></app-select>
           </div>
@@ -90,8 +97,8 @@
         <div class="form-row">
           <div class="form-col">
             <app-input [value]="formSetupForm.get('logoUrl')?.value"
-              (valueChange)="formSetupForm.patchValue({logoUrl: $event})" label="Logo URL"
-              iconName="image" placeholder="Optional"></app-input>
+              (valueChange)="formSetupForm.patchValue({logoUrl: $event})" label="Logo URL" iconName="image"
+              placeholder="Optional"></app-input>
           </div>
           <div class="form-col">
             <app-select [selectedValue]="formSetupForm.get('section')?.value"
@@ -105,9 +112,10 @@
         <!-- Row 3: Responsible User | Form Status -->
         <div class="form-row">
           <div class="form-col">
+            <!-- select component add here for the responsible user -->
             <app-select [selectedValue]="formSetupForm.get('responsibleUser')?.value"
-              (selectionChange)="formSetupForm.patchValue({responsibleUser: $event})" label="Responsible User" iconName="user"
-              placeholder="Select User" [options]="responsibleUsers" [required]="true" [errorMessage]="
+              (selectionChange)="formSetupForm.patchValue({responsibleUser: $event})" label="Responsible User"
+              iconName="user" placeholder="Select User" [options]="responsibleUsers" [required]="true" [errorMessage]="
               isFieldInvalid('responsibleUser')
                 ? 'Responsible user is required'
                 : ''
@@ -143,8 +151,9 @@
         <div class="form-row">
           <div class="form-col">
             <app-select [selectedValue]="formSetupForm.get('submittedButtonName')?.value"
-              (selectionChange)="formSetupForm.patchValue({submittedButtonName: $event})" label="Submitted Button Name" iconName="bookmark"
-              placeholder="Select Button" [options]="submittedButtonOptions" [required]="true" [errorMessage]="
+              (selectionChange)="formSetupForm.patchValue({submittedButtonName: $event})" label="Submitted Button Name"
+              iconName="bookmark" placeholder="Select Button" [options]="submittedButtonOptions" [required]="true"
+              [errorMessage]="
               isFieldInvalid('submittedButtonName')
                 ? 'Button name is required'
                 : ''
@@ -152,8 +161,9 @@
           </div>
           <div class="form-col">
             <app-select [selectedValue]="formSetupForm.get('defaultAcademicYear')?.value"
-              (selectionChange)="formSetupForm.patchValue({defaultAcademicYear: $event})" label="Default Academic Year" iconName="clock"
-              placeholder="Select Academic Year" [options]="academicYears" [required]="true" [errorMessage]="
+              (selectionChange)="formSetupForm.patchValue({defaultAcademicYear: $event})" label="Default Academic Year"
+              iconName="clock" placeholder="Select Academic Year" [options]="academicYears" [required]="true"
+              [errorMessage]="
               isFieldInvalid('defaultAcademicYear')
                 ? 'Academic year is required'
                 : ''
@@ -165,6 +175,7 @@
         <div class="form-row">
           <div class="form-col">
             <div class="field-width-80">
+              <!-- valuechange here take the data from the child component to parent componentss -->
               <app-textarea [value]="formSetupForm.get('description')?.value"
                 (valueChange)="formSetupForm.patchValue({description: $event})" label="Description" iconName="file-text"
                 placeholder="Enter Description" [rows]="4"></app-textarea>

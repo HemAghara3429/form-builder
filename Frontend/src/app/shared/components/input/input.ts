@@ -12,6 +12,8 @@ type InputType = 'text' | 'email' | 'password' | 'number' | 'url' | 'tel';
   styleUrl: './input.scss',
 })
 export class InputComponent implements OnInit {
+   //@input is decorator that allow the parent component to pass the data to the child component and
+  //@output is decorator that allow the child component to send the data to the parent component.
   @Input() label: string = '';
   @Input() iconName?: string;
   @Input() iconSize: 'small' | 'medium' | 'large' = 'small';
@@ -35,20 +37,24 @@ export class InputComponent implements OnInit {
     }
   }
 
+  //emit method send the data to the parent component when the value is change in the input field.
   onValueChange(newValue: string): void {
     this.value = newValue;
     this.valueChange.emit(newValue);
   }
 
+  //onInputChange method is called when the value of the input field is changed and it will call the onValueChange method to emit the new value to the parent component.
   onInputChange(event: Event): void {
     const target = event.target as HTMLInputElement;
     this.onValueChange(target ? target.value : '');
   }
 
+  //emit method send the data to the parent component when the input field is blur.
   onBlur(): void {
     this.blur.emit();
   }
 
+  //emit method send the data to the parent component when the input field is focus.
   onFocus(): void {
     this.focus.emit();
   }

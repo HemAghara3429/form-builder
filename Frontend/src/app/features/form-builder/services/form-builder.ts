@@ -21,6 +21,8 @@ export class FormBuilderStateService {
   }
 
   //addfiled when user drag and drop the field from the sidebar to the canvas.
+  //take two parameter 1]filed type:single line ,paragraph,checkbox...... 2]index:the index where the field should be added.
+  //spread operator copies all elements from one array into another.
   addField(type: FieldType, index?: number): FormField {
     const field = createDefaultField(type);
     const fields = [...this.fields];

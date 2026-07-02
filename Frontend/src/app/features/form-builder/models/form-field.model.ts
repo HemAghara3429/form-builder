@@ -73,6 +73,12 @@ export const FIELD_TYPE_LABELS: Record<FieldType, string> = {
   [FieldType.RATING_NUMBER]: 'Rating Number',
 };
 
+//Create a new form field with default values according to its type.
+//field type pass parameter: single line,paragraph,checkbox and other .....
+//here checkbox,dropdown,radio button by default give three option.
+//maxRating star give the maximum by default 5.
+//termsText give the default text "I agree to the terms and conditions."
+//imageUrl give the default image url empty.
 export function createDefaultField(type: FieldType): FormField {
   const id = `field-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
   const base: FormField = {

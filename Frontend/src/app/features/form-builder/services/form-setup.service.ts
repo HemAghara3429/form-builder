@@ -100,6 +100,8 @@ export class FormSetupService {
       observer.complete();
     });
   }
+  //here this method call when the cancel button click.
+  //remove the datafrom the local storage and set the formSetupData$ to null.
   clearFormSetupData(): void {
     localStorage.removeItem(STORAGE_KEY);
     this.formSetupData$.next(null);

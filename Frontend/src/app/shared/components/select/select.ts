@@ -16,6 +16,8 @@ export interface SelectOption {
   styleUrl: './select.scss',
 })
 export class Select implements OnInit, OnChanges {
+   //@input is decorator that allow the parent component to pass the data to the child component and
+  //@output is decorator that allow the child component to send the data to the parent component.
   @Input() label: string = '';
   @Input() iconName?: string;
   @Input() iconSize: 'small' | 'medium' | 'large' = 'small';
@@ -45,22 +47,26 @@ export class Select implements OnInit, OnChanges {
     }
   }
 
+  //ngOnChanges method is called when the value of the selectedValue is changed and it will update the _selectedValue property.
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['selectedValue']) {
       this._selectedValue = this.selectedValue ?? '';
     }
   }
 
+  //emit method send the data to the parent component when the value is change in the select field.
   onSelectionChange(newValue: string): void {
     this.selectedValue = newValue;
     this.selectionChange.emit(newValue);
   }
 
+  //onSelectChange method is called when the value of the select field is changed and it will call the onSelectionChange method to emit the new value to the parent component.
   onSelectChange(event: Event): void {
     const target = event.target as HTMLSelectElement;
     this.onSelectionChange(target ? target.value : '');
   }
 
+  //emit method send the data to the parent component when the select field is blur.
   onBlur(): void {
     this.blur.emit();
   }
