@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IconComponent } from '../icon/icon';
@@ -15,12 +15,21 @@ export interface SelectOption {
   templateUrl: './select.html',
   styleUrl: './select.scss',
 })
-export class Select implements OnInit {
+export class Select implements OnInit, OnChanges {
   @Input() label: string = '';
   @Input() iconName?: string;
   @Input() iconSize: 'small' | 'medium' | 'large' = 'small';
   @Input() options: SelectOption[] = [];
-  @Input() selectedValue: string = '';
+  private _selectedValue: string = '';
+
+  @Input()
+  set selectedValue(value: string) {
+    this._selectedValue = value ?? '';
+  }
+
+  get selectedValue(): string {
+    return this._selectedValue;
+  }
   @Input() placeholder: string = 'Select an option';
   @Input() required: boolean = false;
   @Input() disabled: boolean = false;
@@ -33,6 +42,12 @@ export class Select implements OnInit {
   ngOnInit(): void {
     if (!this.id) {
       this.id = `select-${Math.random().toString(36).substr(2, 9)}`;
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['selectedValue']) {
+      this._selectedValue = this.selectedValue ?? '';
     }
   }
 

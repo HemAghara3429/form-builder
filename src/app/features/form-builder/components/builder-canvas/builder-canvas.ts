@@ -19,6 +19,10 @@ export class BuilderCanvas implements OnInit, OnDestroy {
   fields: FormField[] = []; //fields is an array that stores all the form fields added to the canvas.
   private sub?: Subscription;
 
+  trackByFieldId(_index: number, field: FormField): string {
+    return field.id;
+  }
+
   constructor(private formBuilderState: FormBuilderStateService) {}
 
   ngOnInit(): void {

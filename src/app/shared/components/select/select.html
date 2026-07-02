@@ -13,7 +13,7 @@
     (change)="onSelectChange($event)"
     (blur)="onBlur()"
   >
-    <option value="" disabled selected>{{ placeholder }}</option>
+    <option value="" disabled [selected]="selectedValue === ''">{{ placeholder }}</option>
     <option *ngFor="let option of options" [value]="option.id">
       {{ option.label }}
     </option>

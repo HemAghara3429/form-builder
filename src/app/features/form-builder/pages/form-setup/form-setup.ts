@@ -8,7 +8,7 @@ import { Select, SelectOption } from '../../../../shared/components/select/selec
 import { Textarea } from '../../../../shared/components/textarea/textarea';            //textarea component import for the text area.
 import { IconComponent } from '../../../../shared/components/icon/icon';               //icon component import for the icons.
 
-import { FormSetupService } from '../../services/form-setup.service';          
+import { FormSetupService } from '../../services/form-setup.service';
 
 //here interface add using FormSetupData.
 import { FormSetupData, BranchOption, SectionOption, AcademicYearOption, FormStatus } from '../../models/form-setup.model';
@@ -24,7 +24,7 @@ import { FormSetupData, BranchOption, SectionOption, AcademicYearOption, FormSta
     Textarea,          //this is the textarea component for the form
     IconComponent,    //this is the icon component for the form
   ],
-  templateUrl: './form-setup.html',     
+  templateUrl: './form-setup.html',
   styleUrl: './form-setup.scss',
 })
 export class FormSetup implements OnInit {
@@ -54,6 +54,7 @@ export class FormSetup implements OnInit {
   ngOnInit(): void {
     this.initializeForm();
     this.loadDropdownData();
+    this.loadSavedFormData();
   }
   //this is the initializeForm method for the form setup page.
   private initializeForm(): void {
@@ -75,6 +76,22 @@ export class FormSetup implements OnInit {
         'Are you sure you want to submit your inquiry? Please review your details before proceeding.',
         Validators.required,
       ],
+    });
+  }
+
+  private loadSavedFormData(): void {
+    this.formSetupService.getFormSetupData().subscribe({
+      next: (savedData) => {
+        if (savedData) {
+          const normalizedData = {
+            ...savedData,
+            branch: this.getOptionIdByValue(this.branches, savedData.branch),
+            section: this.getOptionIdByValue(this.sections, savedData.section),
+            defaultAcademicYear: this.getOptionIdByValue(this.academicYears, savedData.defaultAcademicYear),
+          };
+          this.formSetupForm.patchValue(normalizedData, { emitEvent: false });
+        }
+      },
     });
   }
 
@@ -148,7 +165,12 @@ export class FormSetup implements OnInit {
     this.successMessage = '';
     this.errorMessage = '';//inital provide the empty message.
 
-    const formData: FormSetupData = this.formSetupForm.value;
+    const formData: FormSetupData = {
+      ...this.formSetupForm.getRawValue(),
+      branch: this.getOptionLabel(this.branches, this.formSetupForm.get('branch')?.value ?? ''),
+      section: this.getOptionLabel(this.sections, this.formSetupForm.get('section')?.value ?? ''),
+      defaultAcademicYear: this.getOptionLabel(this.academicYears, this.formSetupForm.get('defaultAcademicYear')?.value ?? ''),
+    } as FormSetupData;
 
     this.formSetupService.saveFormSetup(formData).subscribe({
       next: (response) => {
@@ -169,6 +191,7 @@ export class FormSetup implements OnInit {
 
   //when cancel button click then this method will be called
   onCancel(): void {
+    this.formSetupService.clearFormSetupData();
     this.formSetupForm.reset(); //when click on the cancel button here all filed will be empty..
     this.successMessage = '';
     this.errorMessage = '';
@@ -178,6 +201,26 @@ export class FormSetup implements OnInit {
   //when success message show then this method will be called
   dismissSuccess(): void {
     this.successMessage = '';
+  }
+
+  private getOptionLabel(options: SelectOption[], value: string): string {
+    const normalizedValue = value?.toString().trim() ?? '';
+    if (!normalizedValue) {
+      return '';
+    }
+
+    const matchedOption = options.find((option) => option.id === normalizedValue);
+    return matchedOption ? matchedOption.label : normalizedValue;
+  }
+
+  private getOptionIdByValue(options: SelectOption[], value: string | undefined): string {
+    const normalizedValue = value?.toString().trim() ?? '';
+    if (!normalizedValue) {
+      return '';
+    }
+
+    const matchedOption = options.find((option) => option.label.toLowerCase() === normalizedValue.toLowerCase());
+    return matchedOption ? matchedOption.id : normalizedValue;
   }
 
   getFormControl(controlName: string) {

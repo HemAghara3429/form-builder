@@ -25,7 +25,7 @@
 
       <div
         class="field-wrapper"
-        *ngFor="let field of fields; let i = index"
+        *ngFor="let field of fields; let i = index; trackBy: trackByFieldId"
         cdkDrag
         [cdkDragData]="field"
       >

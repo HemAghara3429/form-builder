@@ -9,14 +9,16 @@ import {
   FormStatus,
 } from '../models/form-setup.model';
 
+const STORAGE_KEY = 'form-setup-data';   //local storage key for the store data form-setup
+
 @Injectable({
   providedIn: 'root',
 })
 export class FormSetupService {
   private readonly API_URL = '/api/forms';
-  private formSetupData$ = new BehaviorSubject<FormSetupData | null>(null);
+  private formSetupData$ = new BehaviorSubject<FormSetupData | null>(this.getStoredFormSetupData());
 
-  //branch option data for the form  
+  //branch option data for the form
   private mockBranches: BranchOption[] = [
     { id: '1', name: 'Information Technology' },
     { id: '2', name: 'Computer Science' },
@@ -38,7 +40,7 @@ export class FormSetupService {
   ];
 
   constructor(private http: HttpClient) {}
-  
+
   getBranches(): Observable<BranchOption[]> {
     // Replace with actual API call
     return new Observable((observer) => {
@@ -67,6 +69,7 @@ export class FormSetupService {
     // return this.http.post<FormSetupData>(`${this.API_URL}/setup`, formData);
     return new Observable((observer) => {
       const savedData = { ...formData, id: 'new-' + Date.now() };
+      this.storeFormSetupData(savedData);
       this.formSetupData$.next(savedData);
       observer.next(savedData);
       observer.complete();
@@ -98,6 +101,25 @@ export class FormSetupService {
     });
   }
   clearFormSetupData(): void {
+    localStorage.removeItem(STORAGE_KEY);
     this.formSetupData$.next(null);
+  }
+
+  private storeFormSetupData(formData: FormSetupData): void {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+  }
+
+  private getStoredFormSetupData(): FormSetupData | null {
+    const storedData = localStorage.getItem(STORAGE_KEY);
+    if (!storedData) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(storedData) as FormSetupData;
+    } catch {
+      localStorage.removeItem(STORAGE_KEY);
+      return null;
+    }
   }
 }
