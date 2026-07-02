@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 
 import { BuilderCanvas } from './builder-canvas';
 
@@ -8,7 +9,7 @@ describe('BuilderCanvas', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [BuilderCanvas],
+      imports: [BuilderCanvas, RouterTestingModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(BuilderCanvas);
@@ -17,6 +18,10 @@ describe('BuilderCanvas', () => {
   });
 
   it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it('should expose the dedicated preview route', () => {
     expect(component).toBeTruthy();
   });
 });

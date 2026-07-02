@@ -1,1 +1,186 @@
-<p>preview-panel works!</p>
+<div class="preview-panel">
+  <div class="preview-panel-shell">
+    <div class="preview-panel-header">
+      <div class="preview-label">Form Preview</div>
+      <h2 class="preview-title">{{ formName$ | async }}</h2>
+      <p class="preview-description">
+        All of the submissions to this form will be appended into a table as signatures in the style of an open letter.
+      </p>
+
+    </div>
+
+    <div class="preview-fields" *ngIf="fields.length > 0; else emptyPreview">
+      <div class="preview-field" *ngFor="let field of fields; trackBy: trackByFieldId">
+        <div class="field-meta">
+          <label class="field-label">
+            {{ field.label || 'Untitled field' }}
+            <span *ngIf="field.required" class="field-required">*</span>
+          </label>
+          <p class="field-description" *ngIf="field.description">{{ field.description }}</p>
+        </div>
+
+        <ng-container [ngSwitch]="field.type">
+          <input
+            *ngSwitchCase="FieldType.SINGLE_LINE"
+            class="field-input"
+            type="text"
+            placeholder="Your answer"
+            title="{{ field.label || 'Short answer' }}"
+            [attr.aria-label]="field.label || 'Short answer'"
+            [(ngModel)]="formValues[field.id]"
+            (ngModelChange)="onValueChange(field, $event)"
+            [required]="field.required"
+          />
+
+          <textarea
+            *ngSwitchCase="FieldType.PARAGRAPH"
+            class="field-input field-textarea"
+            placeholder="Your answer"
+            title="{{ field.label || 'Long answer' }}"
+            [attr.aria-label]="field.label || 'Long answer'"
+            rows="4"
+            [(ngModel)]="formValues[field.id]"
+            (ngModelChange)="onValueChange(field, $event)"
+            [required]="field.required"
+          ></textarea>
+
+          <div *ngSwitchCase="FieldType.DROPDOWN" class="field-select-wrapper">
+            <select
+              class="field-input"
+              title="{{ field.label || 'Select an option' }}"
+              [attr.aria-label]="field.label || 'Select an option'"
+              [(ngModel)]="formValues[field.id]"
+              (ngModelChange)="onValueChange(field, $event)"
+              [required]="field.required"
+            >
+              <option value="">{{ field.placeholder || 'Select an option' }}</option>
+              <option *ngFor="let option of field.options" [value]="option.label">{{ option.label }}</option>
+            </select>
+          </div>
+
+          <div *ngSwitchCase="FieldType.RADIO" class="field-options">
+            <label *ngFor="let option of field.options" class="field-option">
+              <input
+                type="radio"
+                [name]="field.id"
+                [value]="option.label"
+                [(ngModel)]="formValues[field.id]"
+                (change)="onValueChange(field, $event.target.value)"
+                [required]="field.required"
+              />
+              <span>{{ option.label }}</span>
+            </label>
+          </div>
+
+          <div *ngSwitchCase="FieldType.CHECKBOX" class="field-options">
+            <label *ngFor="let option of field.options" class="field-option">
+              <input
+                type="checkbox"
+                [checked]="isCheckboxChecked(field, option.id)"
+                (change)="onCheckboxChange(field, option.id, $event.target.checked)"
+              />
+              <span>{{ option.label }}</span>
+            </label>
+          </div>
+
+          <input
+            *ngSwitchCase="FieldType.DATE_PICKER"
+            class="field-input"
+            type="date"
+            title="{{ field.label || 'Date picker' }}"
+            [attr.aria-label]="field.label || 'Date picker'"
+            [(ngModel)]="formValues[field.id]"
+            (ngModelChange)="onValueChange(field, $event)"
+            [required]="field.required"
+          />
+
+          <input
+            *ngSwitchCase="FieldType.TIME_PICKER"
+            class="field-input"
+            type="time"
+            title="{{ field.label || 'Time picker' }}"
+            [attr.aria-label]="field.label || 'Time picker'"
+            [(ngModel)]="formValues[field.id]"
+            (ngModelChange)="onValueChange(field, $event)"
+            [required]="field.required"
+          />
+
+          <div *ngSwitchCase="FieldType.UPLOAD_FILE" class="field-upload">
+            <input
+              type="file"
+              class="file-input"
+              (change)="onFileSelected(field.id, $event)"
+            />
+            <div class="upload-simple">
+              <span>Upload file</span>
+              <span class="upload-hint">PDF, JPG, PNG, DOCX</span>
+            </div>
+            <div class="file-name" *ngIf="formValues[field.id]">
+              {{ formValues[field.id] }}
+            </div>
+          </div>
+
+          <div *ngSwitchCase="FieldType.RATING_STAR" class="field-rating">
+            <label
+              *ngFor="let star of getRatingArray(field.maxRating ?? 5)"
+              class="rating-star"
+            >
+              <input
+                type="radio"
+                [name]="field.id"
+                [value]="star"
+                [(ngModel)]="formValues[field.id]"
+                (change)="onValueChange(field, $event.target.value)"
+              />
+              ★
+            </label>
+          </div>
+
+          <div *ngSwitchCase="FieldType.RATING_NUMBER" class="field-rating">
+            <label
+              *ngFor="let num of getRatingArray(field.maxRating ?? 10)"
+              class="rating-number"
+            >
+              <input
+                type="radio"
+                [name]="field.id"
+                [value]="num"
+                [(ngModel)]="formValues[field.id]"
+                (change)="onValueChange(field, $event.target.value)"
+              />
+              {{ num }}
+            </label>
+          </div>
+
+          <div *ngSwitchCase="FieldType.IMAGE" class="field-image">
+            <img *ngIf="field.imageUrl" [src]="field.imageUrl" alt="Preview image" />
+            <div *ngIf="!field.imageUrl" class="image-placeholder">
+              Image preview
+            </div>
+          </div>
+
+          <label *ngSwitchCase="FieldType.TERMS_CONDITION" class="field-option terms-option">
+            <input
+              type="checkbox"
+              [(ngModel)]="formValues[field.id]"
+              (change)="onValueChange(field, $event.target.checked)"
+              [required]="field.required"
+            />
+            <span>{{ field.termsText || 'I agree to the terms and conditions.' }}</span>
+          </label>
+        </ng-container>
+      </div>
+    </div>
+
+    <ng-template #emptyPreview>
+      <div class="preview-empty">
+        <p>No fields added yet. Drag fields from the sidebar and click Preview to see the final form design.</p>
+      </div>
+    </ng-template>
+
+    <div class="preview-footer" *ngIf="fields.length > 0">
+      <button class="submit-btn" type="button" (click)="submitForm()">Submit</button>
+      <p class="submit-success" *ngIf="successMessage">{{ successMessage }}</p>
+    </div>
+  </div>
+</div>

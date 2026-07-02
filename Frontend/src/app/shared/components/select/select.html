@@ -1,5 +1,5 @@
 <div class="form-group">
-  <label *ngIf="label" [for]="id" class="form-label">
+  <label *ngIf="label" [for]="id" class="form-label" [id]="id + '-label'">
     <app-icon *ngIf="iconName" [name]="iconName" [size]="iconSize"></app-icon>
     {{ label }}
     <span *ngIf="required" class="required">*</span>
@@ -10,6 +10,9 @@
     [disabled]="disabled"
     class="form-control"
     [class.error]="errorMessage"
+    [attr.aria-labelledby]="label ? (id + '-label') : null"
+    [attr.aria-label]="label ? null : placeholder"
+    [attr.title]="label ? label : placeholder"
     (change)="onSelectChange($event)"
     (blur)="onBlur()"
   >

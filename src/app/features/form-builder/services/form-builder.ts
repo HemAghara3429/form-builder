@@ -7,11 +7,13 @@ import {
   FormField,
 } from '../models/form-field.model';
 
+const STORAGE_KEY = 'form-builder-fields';
+
 @Injectable({
   providedIn: 'root',
 })
 export class FormBuilderStateService {
-  private readonly fieldsSubject = new BehaviorSubject<FormField[]>([]);
+  private readonly fieldsSubject = new BehaviorSubject<FormField[]>(this.getStoredFields());
   readonly fields$ = this.fieldsSubject.asObservable();
 
   get fields(): FormField[] {
@@ -28,12 +30,15 @@ export class FormBuilderStateService {
       fields.push(field);
     }
     this.fieldsSubject.next(fields);
+    this.persistFields(fields);
     return field;
   }
 
   //remove filed when user click the remove button then this method call.
   removeField(id: string): void {
-    this.fieldsSubject.next(this.fields.filter((f) => f.id !== id));
+    const nextFields = this.fields.filter((f) => f.id !== id);
+    this.fieldsSubject.next(nextFields);
+    this.persistFields(nextFields);
   }
 
   //duplicate field when user click the duplicate button then this method call.
@@ -54,13 +59,14 @@ export class FormBuilderStateService {
     const fields = [...this.fields];
     fields.splice(index + 1, 0, copy);
     this.fieldsSubject.next(fields);
+    this.persistFields(fields);
   }
 
   //update filed when the user change the filed are updated.
   updateField(id: string, changes: Partial<FormField>): void {
-    this.fieldsSubject.next(
-      this.fields.map((f) => (f.id === id ? { ...f, ...changes } : f))
-    );
+    const nextFields = this.fields.map((f) => (f.id === id ? { ...f, ...changes } : f));
+    this.fieldsSubject.next(nextFields);
+    this.persistFields(nextFields);
   }
 
   //reorder fields when the user drag and drop the field in the canvas.
@@ -69,8 +75,9 @@ export class FormBuilderStateService {
     const [moved] = fields.splice(previousIndex, 1);
     fields.splice(currentIndex, 0, moved);
     this.fieldsSubject.next(fields);
+    this.persistFields(fields);
   }
- 
+
   //add option when the user add the option in the field.
   addOption(fieldId: string): void {
     const field = this.fields.find((f) => f.id === fieldId);
@@ -110,5 +117,28 @@ export class FormBuilderStateService {
 
   clearFields(): void {
     this.fieldsSubject.next([]);
+    this.persistFields([]);
+  }
+
+  private persistFields(fields: FormField[]): void {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(fields));
+  }
+
+  private getStoredFields(): FormField[] {
+    if (typeof window === 'undefined') {
+      return [];
+    }
+
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (!stored) {
+      return [];
+    }
+
+    try {
+      return JSON.parse(stored) as FormField[];
+    } catch {
+      localStorage.removeItem(STORAGE_KEY);
+      return [];
+    }
   }
 }

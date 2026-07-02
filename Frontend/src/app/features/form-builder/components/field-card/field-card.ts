@@ -51,6 +51,10 @@ export class FieldCard {
     );
   }
 
+  trackByOptionId(_index: number, option: { id: string }): string {
+    return option.id;
+  }
+
   //togglecollapse when the user click the collapse button then this method call
   toggleCollapse(): void {
     this.fieldChange.emit({ collapsed: !this.field.collapsed });

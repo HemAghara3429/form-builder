@@ -141,6 +141,7 @@ $white: #ffffff;
     color: $text-muted;
     cursor: pointer;
     transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    -webkit-user-select: none;
     user-select: none;
 
     .tab-text {
@@ -498,6 +499,7 @@ $white: #ffffff;
   background: $white;
   cursor: pointer;
   transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  -webkit-user-select: none;
   user-select: none;
 
   input[type='radio'] {

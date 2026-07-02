@@ -84,7 +84,7 @@
 
     <!-- Options for checkbox, dropdown, radio -->
     <div class="options-section" *ngIf="hasOptions">
-      <div class="option-row" *ngFor="let option of field.options">
+      <div class="option-row" *ngFor="let option of field.options; trackBy: trackByOptionId">
         <mat-icon class="option-icon">
           {{ field.type === FieldType.CHECKBOX ? 'check_box_outline_blank' : field.type === FieldType.RADIO ? 'radio_button_unchecked' : 'arrow_drop_down' }}
         </mat-icon>

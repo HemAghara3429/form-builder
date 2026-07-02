@@ -117,3 +117,11 @@ $white: #ffffff;
   border-radius: 8px;
   margin-bottom: 16px;
 }
+
+.preview-area {
+  margin-top: 16px;
+}
+
+.toolbar-btn.active {
+  background: darken(#01329c, 8%);
+}

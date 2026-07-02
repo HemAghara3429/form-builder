@@ -1,11 +1,18 @@
 <div class="builder-canvas">
   <div class="canvas-toolbar">
-    <button type="button" class="toolbar-btn primary">Preview</button>
+    <button
+      type="button"
+      class="toolbar-btn primary"
+      (click)="openPreview()"
+    >
+      Preview
+    </button>
     <button type="button" class="toolbar-btn secondary">Save as draft</button>
     <button type="button" class="toolbar-btn secondary">Publish</button>
   </div>
 
   <div class="canvas-area">
+    <div>
     <h3 class="canvas-title" *ngIf="fields.length > 0">Add Your Field</h3>
 <!-- cdkdroplistdata: list is used to drag and drop the fields from the sidebar to the canvas. -->
 <!-- cdkdroplistdropped:call the ondrop method to handle the drop event.this is also call the event binding to the ondrop method.-->

@@ -17,6 +17,7 @@ import { FormBuilderStateService } from '../../services/form-builder';
 })
 export class BuilderCanvas implements OnInit, OnDestroy {
   fields: FormField[] = []; //fields is an array that stores all the form fields added to the canvas.
+  previewUrl = 'http://localhost:4200/form-builder/preview'; //previewUrl is a string that stores the url of the preview page.
   private sub?: Subscription;
 
   trackByFieldId(_index: number, field: FormField): string {
@@ -29,6 +30,16 @@ export class BuilderCanvas implements OnInit, OnDestroy {
     this.sub = this.formBuilderState.fields$.subscribe((fields) => {
       this.fields = fields;
     });
+    if (typeof window !== 'undefined') {
+      this.previewUrl = `${window.location.origin}/form-builder/preview`;
+    }
+  }
+
+  openPreview(): void {
+    try {
+      localStorage.setItem('form-builder-fields', JSON.stringify(this.fields));
+    } catch {}
+    window.open(this.previewUrl || '/form-builder/preview', '_blank', 'noopener,noreferrer');
   }
 
   ngOnDestroy(): void {
