@@ -1,0 +1,222 @@
+$brand-primary: #01329c;
+$brand-primary-hover: #012070;
+$brand-primary-light: #e8f0fe;
+$text-dark: #1f2937;
+$text-muted: #6b7280;
+$background-page: #f3f4f6;
+$background-tab: #f8fafc;
+$white: #ffffff;
+
+.form-builder-container {
+  min-height: 100vh;
+  background-color: $background-page;
+  padding: 24px;
+  box-sizing: border-box;
+
+  * {
+    box-sizing: border-box;
+  }
+}
+
+.form-builder-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 auto 16px;
+  background-color: $white;
+  padding: 16px 24px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  width: 100%;
+
+  .page-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: $text-dark;
+    margin: 0;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 10px;
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+
+      &.btn-default {
+        background-color: $white;
+        color: $brand-primary;
+        border: 1px solid $brand-primary;
+
+        &:hover {
+          background-color: $brand-primary-light;
+        }
+      }
+
+      &.btn-primary {
+        background-color: $brand-primary;
+        color: $white;
+        border: 1px solid $brand-primary;
+
+        &:hover {
+          background-color: $brand-primary-hover;
+        }
+      }
+    }
+  }
+}
+
+.main-div {
+  width: 100%;
+}
+
+.tabs-navigation {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  background-color: $white;
+  border-radius: 8px 8px 0 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  padding: 12px 24px;
+  min-height: 64px;
+
+  .tab-wrapper {
+    flex: 1 1 520px;
+    display: flex;
+    align-items: stretch;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .tab-item {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    padding: 0 20px;
+    min-height: 40px;
+    background: $background-tab;
+    border-bottom: 2px solid transparent;
+    color: $text-muted;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    text-decoration: none;
+
+    .tab-text {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    &.active {
+      background: $white;
+      color: $brand-primary;
+      border-bottom-color: $brand-primary;
+    }
+
+    &.disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+  }
+}
+
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.btn-cancel,
+.btn-save {
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 4px;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.btn-cancel {
+  background: #e6e6e6;
+  color: #4b5563;
+
+  &:hover {
+    background: #d9d9d9;
+  }
+}
+
+.btn-save {
+  background: $brand-primary;
+  color: $white;
+
+  &:hover {
+    background: $brand-primary-hover;
+  }
+}
+
+.form-builder-content {
+  background-color: $white;
+  padding: 24px;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.builder-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+  align-items: start;
+
+  @media (max-width: 992px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.builder-sidebar-col {
+  position: sticky;
+  top: 24px;
+}
+
+@media (max-width: 768px) {
+  .form-builder-container {
+    padding: 16px;
+  }
+
+  .tabs-navigation {
+    padding: 10px 12px;
+
+    .tab-item {
+      padding: 0 12px;
+    }
+  }
+
+  .form-builder-content {
+    padding: 16px;
+  }
+}

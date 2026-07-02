@@ -1,0 +1,45 @@
+<div class="builder-canvas">
+  <div class="canvas-toolbar">
+    <button type="button" class="toolbar-btn primary">Preview</button>
+    <button type="button" class="toolbar-btn secondary">Save as draft</button>
+    <button type="button" class="toolbar-btn secondary">Publish</button>
+  </div>
+
+  <div class="canvas-area">
+    <h3 class="canvas-title" *ngIf="fields.length > 0">Add Your Field</h3>
+<!-- cdkdroplistdata: list is used to drag and drop the fields from the sidebar to the canvas. -->
+<!-- cdkdroplistdropped:call the ondrop method to handle the drop event.this is also call the event binding to the ondrop method.-->
+ <!-- ondrop($event):It contains all the information about the drag-and-drop action. -->
+    <div
+      class="drop-zone"
+      cdkDropList
+      id="canvas-drop-list"
+      [cdkDropListData]="fields"
+      [cdkDropListConnectedTo]="['palette-drop-list']"
+      (cdkDropListDropped)="onDrop($event)"
+      [class.empty]="fields.length === 0"
+    >
+      <div class="empty-state" *ngIf="fields.length === 0">
+        <p>No fields yet. Add fields from the left panel to start building your form.</p>
+      </div>
+
+      <div
+        class="field-wrapper"
+        *ngFor="let field of fields; let i = index; trackBy: trackByFieldId"
+        cdkDrag
+        [cdkDragData]="field"
+      >
+        <div class="field-drag-placeholder" *cdkDragPlaceholder></div>
+        <app-field-card
+          [field]="field"
+          (fieldChange)="onFieldChange(field.id, $event)"
+          (duplicate)="onDuplicate(field.id)"
+          (remove)="onRemove(field.id)"
+          (addOption)="onAddOption(field.id)"
+          (updateOption)="onUpdateOption(field.id, $event)"
+          (removeOption)="onRemoveOption(field.id, $event)"
+        ></app-field-card>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,56 @@
+<div class="form-builder-container">
+  <div class="form-builder-header">
+    <h1 class="page-title">FORM BUILDER</h1>
+    <div class="header-actions">
+      <button type="button" class="btn btn-default">
+        <app-icon name="share-2" size="small"></app-icon>
+        <span>Share</span>
+      </button>
+      <button type="button" class="btn btn-primary">
+        <app-icon name="list" size="small"></app-icon>
+        <span>Form Builder List</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="main-div">
+    <div class="tabs-navigation">
+      <div class="tab-wrapper" role="tablist" aria-label="Form builder steps">
+        <a class="tab-item" routerLink="/form-builder/setup" role="tab">
+          <app-icon name="file-text" size="medium"></app-icon>
+          <span class="tab-text">Form Setup</span>
+        </a>
+        <div class="tab-item active" role="tab" aria-selected="true">
+          <app-icon name="hammer" size="medium"></app-icon>
+          <span class="tab-text">Form Builder</span>
+        </div>
+        <div class="tab-item disabled" role="tab" aria-disabled="true">
+          <app-icon name="link" size="medium"></app-icon>
+          <span class="tab-text">Integration Code</span>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button type="button" class="btn-cancel" (click)="onCancel()">
+          <app-icon name="x" size="small"></app-icon>
+          <span>Cancel</span>
+        </button>
+        <button type="button" class="btn-save" (click)="onSaveNext()">
+          <app-icon name="bookmark" size="small"></app-icon>
+          <span>Save &amp; Next</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="form-builder-content">
+      <div class="builder-layout">
+        <aside class="builder-sidebar-col">
+          <app-builder-sidebar connectedDropListId="canvas-drop-list"></app-builder-sidebar>
+        </aside>
+        <main class="builder-canvas-col">
+          <app-builder-canvas></app-builder-canvas>
+        </main>
+      </div>
+    </div>
+  </div>
+</div>

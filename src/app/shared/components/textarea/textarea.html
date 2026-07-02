@@ -1,0 +1,21 @@
+<div class="form-group">
+  <label *ngIf="label" [for]="id" class="form-label">
+    <app-icon *ngIf="iconName" [name]="iconName" [size]="iconSize"></app-icon>
+    {{ label }}
+    <span *ngIf="required" class="required">*</span>
+  </label>
+  <textarea
+    [id]="id"
+    [value]="value"
+    [placeholder]="placeholder"
+    [disabled]="disabled"
+    [rows]="rows"
+    [attr.maxlength]="maxLength"
+    class="form-control"
+    [class.error]="errorMessage"
+    (input)="onInputChange($event)"
+    (blur)="onBlur()"
+    (focus)="onFocus()"
+  ></textarea>
+  <small *ngIf="errorMessage" class="error-message">{{ errorMessage }}</small>
+</div>
