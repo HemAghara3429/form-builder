@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import {
   CdkDragDrop,
   DragDropModule,
@@ -24,7 +25,10 @@ export class BuilderCanvas implements OnInit, OnDestroy {
     return field.id;
   }
 
-  constructor(private formBuilderState: FormBuilderStateService) {}
+  constructor(
+    private formBuilderState: FormBuilderStateService,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
     this.sub = this.formBuilderState.fields$.subscribe((fields) => {
@@ -38,9 +42,16 @@ export class BuilderCanvas implements OnInit, OnDestroy {
   openPreview(): void {
     try {
       localStorage.setItem('form-builder-fields', JSON.stringify(this.fields));
-    } catch {}
+    } catch { }
     // open in new tab
     window.open(this.previewUrl, '_blank', 'noopener,noreferrer');
+  }
+
+  onPublish(): void {
+    try {
+      localStorage.setItem('form-builder-fields', JSON.stringify(this.fields));
+    } catch { }
+    this.router.navigate(['/form-builder/integration']);
   }
 
   ngOnDestroy(): void {

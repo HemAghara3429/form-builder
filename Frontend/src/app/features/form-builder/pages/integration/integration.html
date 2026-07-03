@@ -1,1 +1,131 @@
-<p>integration works!</p>
+<div class="integration-container">
+  <!-- Header -->
+  <div class="integration-header">
+    <h1 class="page-title">FORM BUILDER</h1>
+    <div class="header-actions">
+      <button type="button" class="btn btn-default">
+        <app-icon name="share-2" size="small"></app-icon>
+        <span>Share</span>
+      </button>
+      <button type="button" class="btn btn-primary">
+        <app-icon name="list" size="small"></app-icon>
+        <span>Form Builder List</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="main-div">
+    <!-- Tabs Navigation -->
+    <div class="tabs-navigation">
+      <div class="tab-wrapper" role="tablist" aria-label="Form builder steps">
+        <a class="tab-item" routerLink="/form-builder/setup" role="tab">
+          <app-icon name="file-text" size="medium"></app-icon>
+          <span class="tab-text">Form Setup</span>
+        </a>
+        <a class="tab-item" routerLink="/form-builder/builder" role="tab">
+          <app-icon name="hammer" size="medium"></app-icon>
+          <span class="tab-text">Form Builder</span>
+        </a>
+        <div class="tab-item active" role="tab" aria-selected="true">
+          <app-icon name="link" size="medium"></app-icon>
+          <span class="tab-text">Integration Code</span>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="action-buttons">
+        <button type="button" class="btn-cancel" (click)="onCancel()" [disabled]="isPublishing">
+          <span class="cancel-icon-wrapper">
+            <app-icon name="x" size="small"></app-icon>
+          </span>
+          <span>Cancel</span>
+        </button>
+        <button type="button" class="btn-save" (click)="onPublishForm()" [disabled]="isPublishing || publishSuccess">
+          <span *ngIf="isPublishing" class="publish-spinner"></span>
+          <app-icon *ngIf="!isPublishing && !publishSuccess" name="send" size="small"></app-icon>
+          <app-icon *ngIf="publishSuccess" name="check" size="small"></app-icon>
+          <span>{{ isPublishing ? 'Publishing...' : publishSuccess ? 'Published!' : 'Publish Form' }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Publish Status Banners -->
+    <div *ngIf="publishSuccess" class="publish-banner publish-banner--success">
+      <app-icon name="check" size="small"></app-icon>
+      <span>Form published and saved to database successfully!</span>
+    </div>
+    <div *ngIf="publishError" class="publish-banner publish-banner--error">
+      <app-icon name="x" size="small"></app-icon>
+      <span>{{ publishError }}</span>
+    </div>
+
+    <!-- Page Content -->
+    <div class="integration-content">
+      <div class="integration-layout">
+        
+        <!-- Left Card: URL & QR Code -->
+        <div class="integration-card qr-card">
+          <!-- Green URL Box -->
+          <div class="url-display-box">
+            <span class="url-text">{{ formUrl }}</span>
+            <button class="url-copy-btn" (click)="copyUrl()" [title]="isUrlCopied ? 'Copied' : 'Copy URL'">
+              <app-icon [name]="isUrlCopied ? 'check' : 'content_copy'" size="small"></app-icon>
+            </button>
+          </div>
+
+          <!-- QR Code Container -->
+          <div class="qr-code-wrapper">
+            <img [src]="qrCodeUrl" 
+                 alt="QR Code for Inquiry Form"
+                 class="qr-code-image">
+          </div>
+
+          <!-- Download Button -->
+          <div class="download-btn-container">
+            <button type="button" class="btn-download" (click)="downloadQRCode()">
+              <app-icon name="download" size="small"></app-icon>
+              <span>Download</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right Card: Iframe integration script -->
+        <div class="integration-card code-card">
+          <div class="code-editor-container">
+            <!-- Copy button in top right of editor -->
+            <button class="code-copy-btn" (click)="copyCode()" [title]="isCodeCopied ? 'Copied' : 'Copy Integration Code'">
+              <app-icon [name]="isCodeCopied ? 'check' : 'content_copy'" size="small"></app-icon>
+            </button>
+
+            <!-- Syntax-highlighted code block -->
+            <pre class="code-snippet"><code><span class="hl-tag">&lt;div</span> <span class="hl-attr">id</span>=<span class="hl-str">"inquiry-form-content"</span><span class="hl-tag">&gt;</span> <span class="hl-tag">&lt;/div&gt;</span>
+<span class="hl-comment">```</span>
+
+<span class="hl-comment">```javascript</span>
+<span class="hl-tag">&lt;script&gt;</span>
+<span class="hl-bracket">(</span><span class="hl-keyword">function</span><span class="hl-bracket">()</span> <span class="hl-bracket">&#123;</span>
+  <span class="hl-keyword">var</span> container = document.<span class="hl-func">getElementById</span><span class="hl-bracket">(</span><span class="hl-str">"inquiry-form-content"</span><span class="hl-bracket">)</span>;
+
+  <span class="hl-keyword">if</span> <span class="hl-bracket">(</span>container<span class="hl-bracket">)</span> <span class="hl-bracket">&#123;</span>
+    <span class="hl-keyword">var</span> iframe = document.<span class="hl-func">createElement</span><span class="hl-bracket">(</span><span class="hl-str">"iframe"</span><span class="hl-bracket">)</span>;
+    iframe.src = <span class="hl-str">"{{ formUrl }}"</span>;
+    iframe.style.cssText = <span class="hl-str">"width:100%; border:none; display:block; overflow:hidden; transition: height 0.2s ease-in-out;"</span>;
+
+    container.<span class="hl-func">appendChild</span><span class="hl-bracket">(</span>iframe<span class="hl-bracket">)</span>;
+
+    window.<span class="hl-func">addEventListener</span><span class="hl-bracket">(</span><span class="hl-str">"message"</span>, <span class="hl-keyword">function</span><span class="hl-bracket">(</span>event<span class="hl-bracket">)</span> <span class="hl-bracket">&#123;</span>
+      <span class="hl-keyword">if</span> <span class="hl-bracket">(</span>event.data &amp;&amp; event.data.height<span class="hl-bracket">)</span> <span class="hl-bracket">&#123;</span>
+        iframe.style.height = event.data.height + <span class="hl-str">"px"</span>;
+      <span class="hl-bracket">&#125;</span>
+    <span class="hl-bracket">&#125;</span><span class="hl-bracket">)</span>;
+  <span class="hl-bracket">&#125;</span>
+<span class="hl-bracket">&#125;</span><span class="hl-bracket">)</span><span class="hl-bracket">()</span>;
+<span class="hl-tag">&lt;/script&gt;</span>
+<span class="hl-comment">```</span></code></pre>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

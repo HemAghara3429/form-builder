@@ -24,7 +24,7 @@ export class BuilderCanvas implements OnInit, OnDestroy {
     return field.id;
   }
 
-  constructor(private formBuilderState: FormBuilderStateService) {}
+  constructor(private formBuilderState: FormBuilderStateService) { }
 
   ngOnInit(): void {
     this.sub = this.formBuilderState.fields$.subscribe((fields) => {
@@ -38,7 +38,7 @@ export class BuilderCanvas implements OnInit, OnDestroy {
   openPreview(): void {
     try {
       localStorage.setItem('form-builder-fields', JSON.stringify(this.fields));
-    } catch {}
+    } catch { }
     window.open(this.previewUrl || '/form-builder/preview', '_blank', 'noopener,noreferrer');
   }
 

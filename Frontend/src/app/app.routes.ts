@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { FormSetup } from './features/form-builder/pages/form-setup/form-setup';
 import { FormBuilderPage } from './features/form-builder/pages/form-builder/form-builder';
 import { Preview } from './features/form-builder/pages/preview/preview';
+import { Integration } from './features/form-builder/pages/integration/integration';
 
 export const routes: Routes = [
   {
@@ -18,6 +19,10 @@ export const routes: Routes = [
       {
         path: 'preview',
         component: Preview,
+      },
+      {
+        path: 'integration',
+        component: Integration,
       },
       {
         path: '',
