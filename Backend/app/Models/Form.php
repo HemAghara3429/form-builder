@@ -2,15 +2,19 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+//A Model is the bridge between your Laravel application and the database.
+//model represent a table in database.
+//easy to create, read, update, and delete records in the database using Eloquent ORM.
 
+use Illuminate\Database\Eloquent\Model; //model import for the create the database structure
+
+//Laravel automatically converts the model name to the table name using its naming convention.
+//form class convert into forms table in the database using Eloquent ORM.
+//Eloquent ORM is Laravel's built-in Object Relational Mapping (ORM) system.
+//It allows you to interact with your database using PHP objects and models instead of writing raw SQL queries
 class Form extends Model
 {
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+
     protected $fillable = [
         'form_name',
         'branch',
@@ -25,12 +29,6 @@ class Form extends Model
         'confirmation_message',
         'fields',
     ];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'fields' => 'array',
     ];

@@ -15,6 +15,9 @@ class FormController extends BaseController
 
         $request->merge($data);
 
+        //laravel validation code .
+        //all filed are must be require also here define the datatype and max length of the field.
+        //$request contains all data sent by the client.
         $request->validate([
             'form_name'             => 'required|string|max:255',
             'branch'                => 'required|string|max:255',
@@ -30,8 +33,18 @@ class FormController extends BaseController
             'fields'                => 'nullable|array',
         ]);
 
+        //new record insert into the database .(create method is used to create a new record in the database using the Form model.)
+        //get the all record.(get method is used to retrieve all records from the database using the Form model.)
+        //find a record by id.(find method is used to retrieve a specific record from the database using the Form model and the provided ID.)
+        //findorfail a record by id.(findOrFail method is used to retrieve a specific record from the database using the Form model and the provided ID. If the record is not found, it will throw a ModelNotFoundException.)
+        //first method is used to retrieve the first record from the database using the Form model
+        //where method is used to filter records based on a specific condition using the Form model.
+        //save method is used to save the data into the database using the Form model.
+        //update method is used to update the existing record in the database using the Form model.
+        //delete method is used to delete the existing record from the database using the Form model.
         $form = Form::create($data);
 
+        //send the response in message and data in json format with 201 status code.
         return response()->json([
             'message' => 'Form saved successfully!',
             'data'    => $form,
@@ -39,6 +52,15 @@ class FormController extends BaseController
     }
     private function mapFields(Request $request): array
     {
+
+
+    //left side:
+      //form_name:database column name
+
+    //right side:
+        //formName:camel case name from the request payload angular send
+        //form_name:snake case name from the request payload
+
         $map = [
             'form_name'             => ['formName',            'form_name'],
             'branch'                => ['branch',              'branch'],

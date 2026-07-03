@@ -9,14 +9,16 @@ use Symfony\Component\HttpFoundation\Response;
 class HandleCors
 {
     protected array $allowedOrigins = [
-        'http://localhost:4200',
+        'http://localhost:4200', //frontend angular application url.
         'http://localhost:3000',
         'http://127.0.0.1:4200',
     ];
 
+    //every request pass through this middleware .this method before it reaches your controller.
+
     public function handle(Request $request, Closure $next): Response
     {
-        $origin = $request->headers->get('Origin');
+        $origin = $request->headers->get('Origin');//read the incoming request header.
 
 
         if ($request->isMethod('OPTIONS')) {
