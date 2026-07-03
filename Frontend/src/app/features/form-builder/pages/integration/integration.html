@@ -40,6 +40,7 @@
           </span>
           <span>Cancel</span>
         </button>
+        <!-- when click the publishform then save the data in database.here call onpublishform method -->
         <button type="button" class="btn-save" (click)="onPublishForm()" [disabled]="isPublishing || publishSuccess">
           <span *ngIf="isPublishing" class="publish-spinner"></span>
           <app-icon *ngIf="!isPublishing && !publishSuccess" name="send" size="small"></app-icon>
@@ -62,7 +63,7 @@
     <!-- Page Content -->
     <div class="integration-content">
       <div class="integration-layout">
-        
+
         <!-- Left Card: URL & QR Code -->
         <div class="integration-card qr-card">
           <!-- Green URL Box -->
@@ -75,9 +76,8 @@
 
           <!-- QR Code Container -->
           <div class="qr-code-wrapper">
-            <img [src]="qrCodeUrl" 
-                 alt="QR Code for Inquiry Form"
-                 class="qr-code-image">
+            <!-- qrcodeurl is static url which is used to generate qr code -->
+            <img [src]="qrCodeUrl" alt="QR Code for Inquiry Form" class="qr-code-image">
           </div>
 
           <!-- Download Button -->
@@ -93,7 +93,8 @@
         <div class="integration-card code-card">
           <div class="code-editor-container">
             <!-- Copy button in top right of editor -->
-            <button class="code-copy-btn" (click)="copyCode()" [title]="isCodeCopied ? 'Copied' : 'Copy Integration Code'">
+            <button class="code-copy-btn" (click)="copyCode()"
+              [title]="isCodeCopied ? 'Copied' : 'Copy Integration Code'">
               <app-icon [name]="isCodeCopied ? 'check' : 'content_copy'" size="small"></app-icon>
             </button>
 

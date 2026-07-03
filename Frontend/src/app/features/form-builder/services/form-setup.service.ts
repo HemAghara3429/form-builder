@@ -69,7 +69,7 @@ export class FormSetupService {
 
   constructor(private http: HttpClient) {}
 
-  // ── Dropdown helpers ────────────────────────────────────────────────────────
+  // ── Dropdown helpers
 
   getBranches(): Observable<BranchOption[]> {
     return of(this.mockBranches);
@@ -83,12 +83,8 @@ export class FormSetupService {
     return of(this.mockAcademicYears);
   }
 
-  // ── Save form setup (local only, called from Form Setup page) ───────────────
+  // ── Save form setup (local only, called from Form Setup page)
 
-  /**
-   * Save form setup data to localStorage so it survives navigation.
-   * No backend call here – data is sent to the DB only on Publish.
-   */
   saveFormSetup(formData: FormSetupData): Observable<FormSetupData> {
     const savedData: FormSetupData = {
       ...formData,
@@ -99,14 +95,8 @@ export class FormSetupService {
     return of(savedData);
   }
 
-  // ── Publish (POST to backend DB) ────────────────────────────────────────────
+  // send the request to the backend and backend save the data and return the response.after the response ui will be update.
 
-  /**
-   * Publish the form:
-   * Sends all form setup fields + canvas builder fields to the Laravel
-   * backend via POST /api/forms. Sets formStatus to 'published'.
-   * Falls back to localStorage-only if the backend is unreachable.
-   */
   publishForm(
     formData: FormSetupData,
     fields: unknown[]
@@ -142,21 +132,20 @@ export class FormSetupService {
       );
   }
 
-  // ── Reactive stream ─────────────────────────────────────────────────────────
+  // ── Reactive stream
 
   getFormSetupData(): Observable<FormSetupData | null> {
     return this.formSetupData$.asObservable();
   }
 
-  // ── Clear (on cancel) ───────────────────────────────────────────────────────
+  // ── Clear (on cancel)
 
   clearFormSetupData(): void {
     localStorage.removeItem(STORAGE_KEY);
     this.formSetupData$.next(null);
   }
 
-  // ── Private helpers ─────────────────────────────────────────────────────────
-
+  // ── Private helpers
   private storeFormSetupData(formData: FormSetupData): void {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
   }

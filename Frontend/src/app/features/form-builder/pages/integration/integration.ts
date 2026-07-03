@@ -14,8 +14,8 @@ import { FormBuilderStateService } from '../../services/form-builder';
   styleUrl: './integration.scss',
 })
 export class Integration implements OnInit, OnDestroy {
-  formUrl: string = 'http://localhost:4200/form-builder/preview';
-  isUrlCopied: boolean = false;
+  formUrl: string = 'http://localhost:4200/form-builder/preview'; //here static url provide for the form preview.
+  isUrlCopied: boolean = false;                      //here urlcopied inital with false value.
   isCodeCopied: boolean = false;
   isPublishing: boolean = false;
   publishSuccess: boolean = false;
@@ -25,6 +25,7 @@ export class Integration implements OnInit, OnDestroy {
   private currentFormData: FormSetupData | null = null;
   private sub?: Subscription;
 
+  //here static url provide for the qr code generation using the formurl
   get qrCodeUrl(): string {
     return `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(this.formUrl)}`;
   }
@@ -60,29 +61,34 @@ export class Integration implements OnInit, OnDestroy {
     this.sub?.unsubscribe();
   }
 
+  //if user click on the cancel button then directly ri-direct in form-setup.
   onCancel(): void {
     this.router.navigate(['/form-builder/builder']);
   }
 
   /**
-   * Publish the form:
-   * 1. Grab current form setup data from the service.
-   * 2. Grab canvas fields from the FormBuilderStateService.
-   * 3. Send a POST/PUT to the Laravel backend with status = 'published'.
-   * 4. Show success/error feedback before navigating away.
+   Publish the form:
+   1. Grab current form setup data from the service.
+   2. Grab canvas fields from the FormBuilderStateService.
+   3. Send a POST/PUT to the Laravel backend with status = 'published'.
+   4. Show success/error feedback before navigating away.
    */
   onPublishForm(): void {
+    //this conditon check whethe data are exist or not.
     if (!this.currentFormData) {
       this.publishError = 'No form setup data found. Please complete Form Setup first.';
       return;
     }
 
+    //variable value change.
     this.isPublishing = true;
     this.publishSuccess = false;
     this.publishError = '';
 
     const canvasFields = this.formBuilderState.fields;
 
+    //form service access inside the publishform method
+    //.subscribe here used to receive data from the obserble.
     this.formSetupService.publishForm(this.currentFormData, canvasFields).subscribe({
       next: (saved) => {
         this.isPublishing = false;
@@ -101,6 +107,7 @@ export class Integration implements OnInit, OnDestroy {
     });
   }
 
+  //copyurl method which use for the copy the text from the ui and paste anywhere.
   copyUrl(): void {
     navigator.clipboard.writeText(this.formUrl).then(() => {
       this.isUrlCopied = true;
@@ -109,6 +116,8 @@ export class Integration implements OnInit, OnDestroy {
       }, 2000);
     });
   }
+
+    //copycode method which use for the copy the text from the ui and paste anywhere.
 
   copyCode(): void {
     const code = this.buildEmbedCode();
@@ -120,6 +129,7 @@ export class Integration implements OnInit, OnDestroy {
     });
   }
 
+  //downloadqrcode for download in png.
   downloadQRCode(): void {
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(this.formUrl)}`;
 
