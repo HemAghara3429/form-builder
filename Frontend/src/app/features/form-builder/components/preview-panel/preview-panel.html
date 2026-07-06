@@ -10,7 +10,7 @@
     </div>
 
     <div class="preview-fields" *ngIf="fields.length > 0; else emptyPreview">
-      <div class="preview-field" *ngFor="let field of fields; trackBy: trackByFieldId">
+      <div class="preview-field" [class.field-has-error]="errors[field.id]" *ngFor="let field of fields; trackBy: trackByFieldId">
         <div class="field-meta">
           <label class="field-label">
             {{ field.label || 'Untitled field' }}
@@ -65,7 +65,7 @@
                 [name]="field.id"
                 [value]="option.label"
                 [(ngModel)]="formValues[field.id]"
-                (change)="onValueChange(field, $event.target.value)"
+                (change)="onValueChange(field, option.label)"
                 [required]="field.required"
               />
               <span>{{ option.label }}</span>
@@ -116,7 +116,7 @@
               <span class="upload-hint">PDF, JPG, PNG, DOCX</span>
             </div>
             <div class="file-name" *ngIf="formValues[field.id]">
-              {{ formValues[field.id] }}
+              {{ getUploadedFileName(formValues[field.id]) }}
             </div>
           </div>
 
@@ -130,7 +130,7 @@
                 [name]="field.id"
                 [value]="star"
                 [(ngModel)]="formValues[field.id]"
-                (change)="onValueChange(field, $event.target.value)"
+                (change)="onValueChange(field, star)"
               />
               ★
             </label>
@@ -146,7 +146,7 @@
                 [name]="field.id"
                 [value]="num"
                 [(ngModel)]="formValues[field.id]"
-                (change)="onValueChange(field, $event.target.value)"
+                (change)="onValueChange(field, num)"
               />
               {{ num }}
             </label>
@@ -160,15 +160,18 @@
           </div>
 
           <label *ngSwitchCase="FieldType.TERMS_CONDITION" class="field-option terms-option">
-            <input
+             <input
               type="checkbox"
               [(ngModel)]="formValues[field.id]"
-              (change)="onValueChange(field, $event.target.checked)"
+              (ngModelChange)="onValueChange(field, $event)"
               [required]="field.required"
             />
             <span>{{ field.termsText || 'I agree to the terms and conditions.' }}</span>
           </label>
         </ng-container>
+        <div class="error-message" *ngIf="errors[field.id]">
+          {{ errors[field.id] }}
+        </div>
       </div>
     </div>
 
@@ -181,6 +184,7 @@
     <div class="preview-footer" *ngIf="fields.length > 0">
       <button class="submit-btn" type="button" (click)="submitForm()">Submit</button>
       <p class="submit-success" *ngIf="successMessage">{{ successMessage }}</p>
+      <p class="submit-error" *ngIf="errorMessage">{{ errorMessage }}</p>
     </div>
   </div>
 </div>

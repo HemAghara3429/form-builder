@@ -82,6 +82,91 @@
       />
     </div>
 
+    <!-- Validation Settings -->
+    <div class="validation-settings-section" *ngIf="field.showValidation">
+      <h4 class="settings-title">Response Validation</h4>
+      <div class="config-row" *ngIf="field.type === FieldType.SINGLE_LINE || field.type === FieldType.PARAGRAPH">
+        <div class="config-col">
+          <label class="config-label">Min Length</label>
+          <input
+            type="number"
+            class="config-input"
+            placeholder="Min characters"
+            [ngModel]="field.validationRules?.minLength"
+            (ngModelChange)="updateValidationRule('minLength', $event)"
+          />
+        </div>
+        <div class="config-col">
+          <label class="config-label">Max Length</label>
+          <input
+            type="number"
+            class="config-input"
+            placeholder="Max characters"
+            [ngModel]="field.validationRules?.maxLength"
+            (ngModelChange)="updateValidationRule('maxLength', $event)"
+          />
+        </div>
+        <div class="config-col">
+          <label class="config-label">Format Validation</label>
+          <select
+            class="config-input"
+            [ngModel]="field.validationRules?.patternType || 'none'"
+            (ngModelChange)="updateValidationRule('patternType', $event)"
+            title="Format validation type"
+          >
+            <option value="none">None</option>
+            <option value="email">Email</option>
+            <option value="url">URL</option>
+            <option value="phone">Phone Number</option>
+            <option value="custom">Custom Regular Expression</option>
+          </select>
+        </div>
+        <div class="config-col" *ngIf="field.validationRules?.patternType === 'custom'">
+          <label class="config-label">Custom Regex Pattern</label>
+          <input
+            type="text"
+            class="config-input"
+            placeholder="e.g. ^[0-9]{5}$"
+            [ngModel]="field.validationRules?.customRegex"
+            (ngModelChange)="updateValidationRule('customRegex', $event)"
+          />
+        </div>
+        <div class="config-col" *ngIf="field.validationRules?.patternType === 'custom'">
+          <label class="config-label">Custom Error Message</label>
+          <input
+            type="text"
+            class="config-input"
+            placeholder="Invalid format"
+            [ngModel]="field.validationRules?.customErrorMessage"
+            (ngModelChange)="updateValidationRule('customErrorMessage', $event)"
+          />
+        </div>
+      </div>
+
+      <div class="config-row" *ngIf="field.type === FieldType.UPLOAD_FILE">
+        <div class="config-col">
+          <label class="config-label">Allowed Extensions</label>
+          <input
+            type="text"
+            class="config-input"
+            placeholder="e.g. pdf, png, jpg"
+            [ngModel]="field.validationRules?.allowedExtensions"
+            (ngModelChange)="updateValidationRule('allowedExtensions', $event)"
+          />
+        </div>
+        <div class="config-col">
+          <label class="config-label">Max File Size (MB)</label>
+          <input
+            type="number"
+            class="config-input"
+            placeholder="e.g. 5"
+            [ngModel]="field.validationRules?.maxFileSize"
+            (ngModelChange)="updateValidationRule('maxFileSize', $event)"
+          />
+        </div>
+      </div>
+    </div>
+
     <!-- Options for checkbox, dropdown, radio -->
     <div class="options-section" *ngIf="hasOptions">
       <div class="option-row" *ngFor="let option of field.options">
@@ -202,7 +287,7 @@
         <div class="context-menu" *ngIf="showMenu">
           <button type="button" (click)="closeMenu()">Show</button>
           <button type="button" (click)="onDescriptionChange(field.description ?? ''); closeMenu()">Description</button>
-          <button type="button" (click)="closeMenu()">Response Validation</button>
+          <button type="button" (click)="toggleValidationSettings(); closeMenu()">Response Validation</button>
         </div>
       </div>
     </div>

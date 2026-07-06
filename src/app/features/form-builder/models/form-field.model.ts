@@ -19,6 +19,16 @@ export interface FieldOption {
   label: string;
 }
 
+export interface ValidationRules {
+  minLength?: number;
+  maxLength?: number;
+  patternType?: 'none' | 'email' | 'url' | 'phone' | 'custom';
+  customRegex?: string;
+  customErrorMessage?: string;
+  allowedExtensions?: string;
+  maxFileSize?: number;
+}
+
 export interface FormField {
   id: string;
   type: FieldType;
@@ -31,6 +41,8 @@ export interface FormField {
   maxRating?: number;
   imageUrl?: string;
   termsText?: string;
+  showValidation?: boolean;
+  validationRules?: ValidationRules;
 }
 
 //here descrive the structure of the sidebar items

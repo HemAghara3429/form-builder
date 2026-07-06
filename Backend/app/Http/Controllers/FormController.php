@@ -18,9 +18,122 @@ class FormController extends BaseController
             'submitted_data' => 'required|array',
         ]);
 
+        $formName = $request->input('form_name');
+        $submittedData = $request->input('submitted_data');
+
+        // Look up the form definition by form name
+        $form = Form::where('form_name', $formName)->latest()->first();
+
+        if ($form) {
+            $fields = $form->fields; // This is casted to array in Form.php
+            
+            if (is_array($fields)) {
+                $errors = [];
+                
+                foreach ($fields as $field) {
+                    $fieldId = $field['id'] ?? '';
+                    $label = $field['label'] ?? '';
+                    $type = $field['type'] ?? '';
+                    $required = $field['required'] ?? false;
+                    $placeholder = $field['placeholder'] ?? '';
+                    
+                    // Match key in submitted_data
+                    // In preview panel: const key = field.label?.trim() || field.placeholder?.trim() || field.id;
+                    $key = trim($label);
+                    if (empty($key) && !empty($placeholder)) {
+                        $key = trim($placeholder);
+                    }
+                    if (empty($key)) {
+                        $key = $fieldId;
+                    }
+
+                    $value = isset($submittedData[$key]) ? $submittedData[$key] : null;
+
+                    // Required check
+                    if ($required) {
+                        $isEmpty = false;
+                        if ($value === null || $value === '') {
+                            $isEmpty = true;
+                        } else if (is_array($value) && empty($value)) {
+                            $isEmpty = true;
+                        } else if ($value === false || $value === 'false') {
+                            $isEmpty = true;
+                        }
+                        
+                        if ($isEmpty) {
+                            $errors[$key] = "The field '{$key}' is required.";
+                            continue;
+                        }
+                    }
+
+                    // Perform validations if value is present and not empty
+                    if ($value !== null && $value !== '' && $value !== false && !(is_array($value) && empty($value))) {
+                        $rules = isset($field['validationRules']) ? $field['validationRules'] : null;
+                        
+                        if (is_array($rules)) {
+                            // 1. Text Field Validations (single_line or paragraph)
+                            if ($type === 'single_line' || $type === 'paragraph') {
+                                $strVal = (string)$value;
+                                
+                                if (isset($rules['minLength']) && strlen($strVal) < (int)$rules['minLength']) {
+                                    $errors[$key] = "The field '{$key}' must be at least {$rules['minLength']} characters.";
+                                }
+                                if (isset($rules['maxLength']) && strlen($strVal) > (int)$rules['maxLength']) {
+                                    $errors[$key] = "The field '{$key}' must not exceed {$rules['maxLength']} characters.";
+                                }
+                                
+                                if (isset($rules['patternType']) && $rules['patternType'] !== 'none') {
+                                    $patternType = $rules['patternType'];
+                                    if ($patternType === 'email' && !filter_var($strVal, FILTER_VALIDATE_EMAIL)) {
+                                        $errors[$key] = "The field '{$key}' must be a valid email address.";
+                                    } elseif ($patternType === 'url' && !filter_var($strVal, FILTER_VALIDATE_URL)) {
+                                        $errors[$key] = "The field '{$key}' must be a valid URL.";
+                                    } elseif ($patternType === 'phone' && !preg_match('/^\+?[0-9\s\-()]{7,15}$/', $strVal)) {
+                                        $errors[$key] = "The field '{$key}' must be a valid phone number.";
+                                    } elseif ($patternType === 'custom' && !empty($rules['customRegex'])) {
+                                        $pattern = $rules['customRegex'];
+                                        // Auto wrap delimiter if not present
+                                        if (substr($pattern, 0, 1) !== '/' || substr($pattern, -1) !== '/') {
+                                            $pattern = '/' . str_replace('/', '\/', $pattern) . '/';
+                                        }
+                                        if (@preg_match($pattern, $strVal) === 0) {
+                                            $errors[$key] = !empty($rules['customErrorMessage']) 
+                                                ? $rules['customErrorMessage'] 
+                                                : "The field '{$key}' format is invalid.";
+                                        }
+                                    }
+                                }
+                            }
+                            
+                            // 2. File Upload Validations
+                            if ($type === 'upload_file') {
+                                $fileName = is_string($value) ? $value : (isset($value['name']) ? $value['name'] : '');
+                                if (!empty($fileName)) {
+                                    if (isset($rules['allowedExtensions']) && !empty($rules['allowedExtensions'])) {
+                                        $ext = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+                                        $allowed = array_map('trim', array_map('strtolower', explode(',', $rules['allowedExtensions'])));
+                                        if (!in_array($ext, $allowed)) {
+                                            $errors[$key] = "Allowed extensions for '{$key}' are: " . implode(', ', $allowed);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (!empty($errors)) {
+                    return response()->json([
+                        'message' => 'Validation failed',
+                        'errors'  => $errors,
+                    ], 422);
+                }
+            }
+        }
+
         $submission = FormSubmission::create([
-            'form_name'      => $request->input('form_name'),
-            'submitted_data' => $request->input('submitted_data'),
+            'form_name'      => $formName,
+            'submitted_data' => $submittedData,
         ]);
 
         return response()->json([

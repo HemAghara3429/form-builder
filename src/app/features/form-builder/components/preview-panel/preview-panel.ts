@@ -23,6 +23,7 @@ export class PreviewPanel implements OnChanges {
   isSubmitting = false;
   successMessage = '';
   errorMessage = '';
+  errors: Record<string, string> = {};
 
   //store the current form name for the submission payload.
   private currentFormName = 'Untitled Form';
@@ -91,25 +92,168 @@ export class PreviewPanel implements OnChanges {
       this.formValues[fieldId] = {};
     }
     this.formValues[fieldId][optionId] = !this.formValues[fieldId][optionId];
+    if (this.errors[fieldId]) {
+      delete this.errors[fieldId];
+    }
+  }
+
+  onFileSelected(fieldId: string, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (file) {
+      this.formValues[fieldId] = {
+        name: file.name,
+        size: file.size
+      };
+      if (this.errors[fieldId]) {
+        delete this.errors[fieldId];
+      }
+    }
+  }
+
+  getUploadedFileName(val: any): string {
+    if (!val) return '';
+    if (typeof val === 'string') return val;
+    if (typeof val === 'object' && val !== null && 'name' in val) {
+      return val.name;
+    }
+    return '';
+  }
+
+  validateForm(): boolean {
+    this.errors = {};
+    let isValid = true;
+
+    for (const field of this.fields) {
+      const value = this.formValues[field.id];
+      
+      // Required Validation
+      if (field.required) {
+        let isEmpty = false;
+        if (value === undefined || value === null) {
+          isEmpty = true;
+        } else if (typeof value === 'string' && value.trim() === '') {
+          isEmpty = true;
+        } else if (Array.isArray(value) && value.length === 0) {
+          isEmpty = true;
+        } else if (typeof value === 'boolean' && !value) {
+          isEmpty = true;
+        } else if (typeof value === 'object' && value !== null) {
+          isEmpty = Object.values(value).every(v => !v);
+        }
+
+        if (isEmpty) {
+          this.errors[field.id] = 'This field is required.';
+          isValid = false;
+          continue;
+        }
+      }
+
+      // Format & Value Validation
+      if (value !== undefined && value !== null && value !== '') {
+        const rules = field.validationRules;
+        if (rules) {
+          // Text rules
+          if (field.type === FieldType.SINGLE_LINE || field.type === FieldType.PARAGRAPH) {
+            const strVal = String(value);
+            if (rules.minLength && strVal.length < rules.minLength) {
+              this.errors[field.id] = `Must be at least ${rules.minLength} characters.`;
+              isValid = false;
+            }
+            if (rules.maxLength && strVal.length > rules.maxLength) {
+              this.errors[field.id] = `Must not exceed ${rules.maxLength} characters.`;
+              isValid = false;
+            }
+            
+            if (rules.patternType && rules.patternType !== 'none') {
+              if (rules.patternType === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(strVal)) {
+                this.errors[field.id] = 'Please enter a valid email address.';
+                isValid = false;
+              } else if (rules.patternType === 'url') {
+                let validUrl = false;
+                try {
+                  new URL(strVal);
+                  validUrl = true;
+                } catch {}
+                if (!validUrl) {
+                  this.errors[field.id] = 'Please enter a valid URL.';
+                  isValid = false;
+                }
+              } else if (rules.patternType === 'phone' && !/^\+?[0-9\s\-()]{7,15}$/.test(strVal)) {
+                this.errors[field.id] = 'Please enter a valid phone number.';
+                isValid = false;
+              } else if (rules.patternType === 'custom' && rules.customRegex) {
+                try {
+                  const regex = new RegExp(rules.customRegex);
+                  if (!regex.test(strVal)) {
+                    this.errors[field.id] = rules.customErrorMessage || 'Invalid format.';
+                    isValid = false;
+                  }
+                } catch {
+                  console.warn('Invalid custom regex pattern:', rules.customRegex);
+                }
+              }
+            }
+          }
+
+          // File upload rules
+          if (field.type === FieldType.UPLOAD_FILE && typeof value === 'object' && value !== null) {
+            const fileObj = value as { name?: string; size?: number };
+            if (fileObj.name) {
+              if (rules.allowedExtensions) {
+                const parts = fileObj.name.split('.');
+                const ext = parts.length > 1 ? parts.pop()?.toLowerCase() || '' : '';
+                const allowed = rules.allowedExtensions.split(',').map(x => x.trim().toLowerCase());
+                if (!allowed.includes(ext)) {
+                  this.errors[field.id] = `Allowed extensions are: ${rules.allowedExtensions}`;
+                  isValid = false;
+                }
+              }
+              if (rules.maxFileSize && fileObj.size) {
+                const maxBytes = rules.maxFileSize * 1024 * 1024;
+                if (fileObj.size > maxBytes) {
+                  this.errors[field.id] = `File size must not exceed ${rules.maxFileSize} MB.`;
+                  isValid = false;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return isValid;
   }
 
   //submit the form to the backend.
   onSubmit(): void {
-    this.isSubmitting = true;
     this.successMessage = '';
     this.errorMessage = '';
+
+    if (!this.validateForm()) {
+      this.errorMessage = 'Please resolve the validation errors before submitting.';
+      return;
+    }
+
+    this.isSubmitting = true;
 
     //build the submission data with field labels as keys for readability.
     const submittedData: Record<string, any> = {};
     for (const field of this.fields) {
       const key = field.label || field.id;
-      submittedData[key] = this.formValues[field.id];
+      const value = this.formValues[field.id];
+      if (field.type === FieldType.UPLOAD_FILE && value && typeof value === 'object') {
+        submittedData[key] = (value as { name: string }).name || '';
+      } else {
+        submittedData[key] = value;
+      }
     }
 
     this.formSubmissionService.submitForm(this.currentFormName, submittedData).subscribe({
       next: () => {
         this.isSubmitting = false;
         this.successMessage = 'Form submitted successfully!';
+        this.errors = {};
         //auto-dismiss success message after 5 seconds.
         setTimeout(() => {
           this.successMessage = '';
@@ -117,7 +261,18 @@ export class PreviewPanel implements OnChanges {
       },
       error: (err) => {
         this.isSubmitting = false;
-        this.errorMessage = 'Failed to submit form. Please try again.';
+        if (err.status === 422 && err.error && err.error.errors) {
+          const beErrors = err.error.errors as Record<string, string>;
+          this.errorMessage = 'Validation failed on the server.';
+          for (const field of this.fields) {
+            const key = field.label || field.id;
+            if (beErrors[key]) {
+              this.errors[field.id] = beErrors[key];
+            }
+          }
+        } else {
+          this.errorMessage = 'Failed to submit form. Please try again.';
+        }
         console.error('Form submission error:', err);
         //auto-dismiss error message after 5 seconds.
         setTimeout(() => {

@@ -24,7 +24,7 @@
   </div>
 
   <div class="preview-fields" *ngIf="fields.length > 0">
-    <div class="preview-field" *ngFor="let field of fields; trackBy: trackByFieldId">
+    <div class="preview-field" [class.field-has-error]="errors[field.id]" *ngFor="let field of fields; trackBy: trackByFieldId">
       <div class="field-label-row">
         <label class="field-label" *ngIf="field.label">
           {{ field.label }}<span *ngIf="field.required"> *</span>
@@ -110,8 +110,20 @@
         />
 
         <!-- File Upload -->
-        <div *ngSwitchCase="FieldType.UPLOAD_FILE" class="field-upload">
-          <span>Upload file</span>
+        <div *ngSwitchCase="FieldType.UPLOAD_FILE" class="field-upload" style="position: relative;">
+          <input
+            type="file"
+            class="file-input"
+            (change)="onFileSelected(field.id, $event)"
+            style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;"
+          />
+          <div class="upload-area" style="position: relative;">
+            <div class="upload-text">Upload file</div>
+            <div class="upload-hint">PDF, JPG, PNG, DOCX</div>
+            <div class="file-name" *ngIf="formValues[field.id]" style="margin-top: 8px; font-weight: 600; color: #374151;">
+              {{ getUploadedFileName(formValues[field.id]) }}
+            </div>
+          </div>
         </div>
 
         <!-- Star Rating -->
@@ -149,6 +161,9 @@
           <span>{{ field.termsText || 'I agree to the terms and conditions.' }}</span>
         </label>
       </ng-container>
+      <div class="error-message" *ngIf="errors[field.id]">
+        {{ errors[field.id] }}
+      </div>
     </div>
 
     <!-- Submit Button -->

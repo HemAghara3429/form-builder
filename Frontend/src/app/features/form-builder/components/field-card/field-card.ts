@@ -106,6 +106,31 @@ export class FieldCard {
     this.showMenu = false;
   }
 
+  toggleValidationSettings(): void {
+    const show = !this.field.showValidation;
+    const rules = this.field.validationRules || {
+      minLength: undefined,
+      maxLength: undefined,
+      patternType: 'none',
+      customRegex: '',
+      customErrorMessage: '',
+      allowedExtensions: '',
+      maxFileSize: undefined,
+    };
+    this.fieldChange.emit({
+      showValidation: show,
+      validationRules: rules
+    });
+  }
+
+  updateValidationRule(key: string, value: any): void {
+    const rules = {
+      ...(this.field.validationRules || {}),
+      [key]: value === '' || value === null ? undefined : value
+    };
+    this.fieldChange.emit({ validationRules: rules });
+  }
+
   //getstararray when the user click the star button then this method call
   getStarArray(): number[] {
     const count = this.field.maxRating ?? 5;
