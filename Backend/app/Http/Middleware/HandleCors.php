@@ -20,7 +20,7 @@ class HandleCors
     {
         $origin = $request->headers->get('Origin');//read the incoming request header.
 
-
+        //handle preflight requests (OPTIONS).
         if ($request->isMethod('OPTIONS')) {
             $response = response('', 204);
             return $this->addCorsHeaders($response, $origin);
@@ -31,8 +31,12 @@ class HandleCors
     }
 
 
+    //cors header add for the request.this method is used to add the cors header for the request.
+    //this method is called only for the non-option request.
     private function addCorsHeaders(Response $response, ?string $origin): Response
     {
+        //here check the origin is in the allowedOrigins array or not.
+        //if the origin is in the allowedOrigins array then set the Access-Control-Allow-Origin header to the origin.
         if ($origin && in_array($origin, $this->allowedOrigins)) {
             $response->headers->set('Access-Control-Allow-Origin', $origin);
         } else {
