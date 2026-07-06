@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    //here create the form_submissions table inside the here create the 4 field.(id,form_name,submitted_data,created_at,updated_at).
+    //create method use for the create the table.
+    //down method use for the drop the table .
     public function up(): void
     {
         Schema::create('form_submissions', function (Blueprint $table) {
@@ -19,7 +22,7 @@ return new class extends Migration
             $table->timestamps();
         });
     }
-
+    //down method use for the drop the table.
     public function down(): void
     {
         Schema::dropIfExists('form_submissions');
