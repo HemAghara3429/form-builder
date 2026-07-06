@@ -8,8 +8,8 @@ import { FormSetupService } from '../../services/form-setup.service';
 import { FormSubmissionService } from '../../services/form-submission.service';
 import { FormBuilderStateService } from '../../services/form-builder';
 
-const PREVIEW_VALUES_KEY = 'form-builder-preview-values';
-const PREVIEW_SUBMISSIONS_KEY = 'form-builder-preview-submissions';
+const PREVIEW_VALUES_KEY = 'form-builder-preview-values'; // local storage key for form values
+const PREVIEW_SUBMISSIONS_KEY = 'form-builder-preview-submissions';// local storage key for form submissions
 
 @Component({
   selector: 'app-preview-panel',
@@ -21,10 +21,12 @@ export class PreviewPanel implements OnInit, OnChanges {
   @Input() fields: FormField[] = [];
   readonly FieldType = FieldType;
   formValues: Record<string, unknown> = {};
-  successMessage = '';
-  errorMessage = '';
-  errors: Record<string, string> = {};
+  successMessage = '';  //success message inital empty
+  errorMessage = '';//error message inital empty
+  errors: Record<string, string> = {}; //errors inital empty 
 
+  //A constructor is a special method that runs automatically when the component is created. 
+  //Here we are injecting services that we need to use in our component.
   constructor(
     private readonly formSetupService: FormSetupService,
     private readonly formSubmissionService: FormSubmissionService,
@@ -50,10 +52,12 @@ export class PreviewPanel implements OnInit, OnChanges {
       .pipe(map((data) => data?.formName?.trim() || 'Untitled Form'));
   }
 
+  //it helps to track the changes in the fields and update the fields only when the changes are detected.
   trackByFieldId(_index: number, field: FormField): string {
     return field.id;
   }
 
+  //rating array.
   getRatingArray(maxRating: number): number[] {
     return Array.from({ length: maxRating }, (_, i) => i + 1);
   }
@@ -116,7 +120,7 @@ export class PreviewPanel implements OnInit, OnChanges {
   submitForm(): void {
     this.successMessage = '';
     this.errorMessage = '';
-    
+
     if (!this.validateForm()) {
       this.errorMessage = 'Please resolve the validation errors before submitting.';
       return;
@@ -220,8 +224,11 @@ export class PreviewPanel implements OnInit, OnChanges {
     this.saveValues();
   }
 
+  //save the value store the data into local storage.
+
   private saveValues(): void {
     try {
+      //Converts a JavaScript object to a JSON string
       localStorage.setItem(PREVIEW_VALUES_KEY, JSON.stringify(this.formValues));
     } catch { }
   }
@@ -231,13 +238,14 @@ export class PreviewPanel implements OnInit, OnChanges {
       return {};
     }
     try {
-      const raw = localStorage.getItem(PREVIEW_VALUES_KEY);
+      const raw = localStorage.getItem(PREVIEW_VALUES_KEY); // retrieve form values from local storage
       if (!raw) {
         return {};
       }
-      return JSON.parse(raw) as Record<string, unknown>;
+      //convert a JSON string into a JavaScript object.
+      return JSON.parse(raw) as Record<string, unknown>; // parse form values from local storage
     } catch {
-      localStorage.removeItem(PREVIEW_VALUES_KEY);
+      localStorage.removeItem(PREVIEW_VALUES_KEY); // remove form values from local storage
       return {};
     }
   }
