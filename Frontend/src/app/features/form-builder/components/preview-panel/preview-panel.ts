@@ -39,6 +39,8 @@ export class PreviewPanel implements OnInit, OnChanges {
     this.initializeFieldValues();
   }
 
+  //it is used to detect the changes in the fields and update the fields only when the changes are detected.
+  //this function is called when the component is initialized and when the fields are changed.
   ngOnChanges(changes: SimpleChanges): void {
     const fieldChanges = changes['fields'];
     if (fieldChanges) {
@@ -112,6 +114,7 @@ export class PreviewPanel implements OnInit, OnChanges {
     return '';
   }
 
+  //validation form 
   validateForm(): boolean {
     this.errors = {};
     return true;
@@ -126,8 +129,8 @@ export class PreviewPanel implements OnInit, OnChanges {
       return;
     }
 
-    this.saveValues();
-    const submissionValues = this.buildSubmissionValues();
+    this.saveValues(); //saveValues function call when user submit the form.
+    const submissionValues = this.buildSubmissionValues(); //buildSubmissionValues function call when user submit the form.
 
     // Get current form name to label the submission in the DB
     this.formSetupService.getFormSetupData().pipe(take(1)).subscribe((data) => {
@@ -181,11 +184,12 @@ export class PreviewPanel implements OnInit, OnChanges {
     });
   }
 
+  //buildSubmissionValues function call when user submit the form.
   private buildSubmissionValues(): Record<string, unknown> {
     const values: Record<string, unknown> = {};
 
     for (const field of this.fields) {
-      const key = field.label?.trim() || field.placeholder?.trim() || field.id;
+      const key = field.label?.trim() || field.placeholder?.trim() || field.id; //remove the space 
       const value = this.formValues[field.id];
 
       if (field.type === FieldType.CHECKBOX && Array.isArray(value)) {
