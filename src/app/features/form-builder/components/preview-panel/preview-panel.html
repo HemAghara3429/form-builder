@@ -2,7 +2,21 @@
   <div class="preview-header">
     <div class="preview-label">Form Preview</div>
     <h2>{{ (formName$ | async) || 'Untitled Form' }}</h2>
-    <p>Preview renders the current dynamic fields from the builder.</p>
+    <p>Fill out the form below and click Submit to save your response.</p>
+  </div>
+
+  <!-- Success notification -->
+  <div class="notification notification-success" *ngIf="successMessage">
+    <span class="notification-icon">✓</span>
+    <span class="notification-text">{{ successMessage }}</span>
+    <button class="notification-close" (click)="dismissSuccess()" title="Dismiss">×</button>
+  </div>
+
+  <!-- Error notification -->
+  <div class="notification notification-error" *ngIf="errorMessage">
+    <span class="notification-icon">!</span>
+    <span class="notification-text">{{ errorMessage }}</span>
+    <button class="notification-close" (click)="dismissError()" title="Dismiss">×</button>
   </div>
 
   <div class="preview-empty" *ngIf="fields.length === 0">
@@ -21,80 +35,133 @@
       <p class="field-description" *ngIf="field.description">{{ field.description }}</p>
 
       <ng-container [ngSwitch]="field.type">
+        <!-- Single Line Input -->
         <input
           *ngSwitchCase="FieldType.SINGLE_LINE"
           type="text"
           class="field-control"
           placeholder="{{ field.placeholder || 'Short answer text' }}"
-          title="{{ field.label || 'Short answer text' }}"
           [attr.aria-label]="field.label || 'Short answer text'"
-          disabled
+          [(ngModel)]="formValues[field.id]"
         />
+
+        <!-- Paragraph Textarea -->
         <textarea
           *ngSwitchCase="FieldType.PARAGRAPH"
           class="field-control"
           placeholder="{{ field.placeholder || 'Long answer text' }}"
-          title="{{ field.label || 'Long answer text' }}"
           [attr.aria-label]="field.label || 'Long answer text'"
-          disabled
+          [(ngModel)]="formValues[field.id]"
           rows="4"
         ></textarea>
+
+        <!-- Dropdown Select -->
         <div *ngSwitchCase="FieldType.DROPDOWN" class="field-control dropdown-control">
           <select
-            disabled
-            title="{{ field.label || (field.placeholder || 'Select an option') }}"
+            [(ngModel)]="formValues[field.id]"
             [attr.aria-label]="field.label || (field.placeholder || 'Select an option')"
           >
-            <option>{{ field.placeholder || 'Select an option' }}</option>
-            <option *ngFor="let option of field.options">{{ option.label }}</option>
+            <option value="" disabled>{{ field.placeholder || 'Select an option' }}</option>
+            <option *ngFor="let option of field.options" [value]="option.label">{{ option.label }}</option>
           </select>
         </div>
+
+        <!-- Radio Buttons -->
         <div *ngSwitchCase="FieldType.RADIO" class="field-options">
           <label *ngFor="let option of field.options" class="field-option">
-            <input type="radio" [name]="field.id" disabled />
+            <input
+              type="radio"
+              [name]="field.id"
+              [value]="option.label"
+              [(ngModel)]="formValues[field.id]"
+            />
             <span>{{ option.label }}</span>
           </label>
         </div>
+
+        <!-- Checkboxes -->
         <div *ngSwitchCase="FieldType.CHECKBOX" class="field-options">
           <label *ngFor="let option of field.options" class="field-option">
-            <input type="checkbox" disabled />
+            <input
+              type="checkbox"
+              [checked]="formValues[field.id]?.[option.id]"
+              (change)="toggleCheckbox(field.id, option.id)"
+            />
             <span>{{ option.label }}</span>
           </label>
         </div>
+
+        <!-- Date Picker -->
         <input
           *ngSwitchCase="FieldType.DATE_PICKER"
           type="date"
           class="field-control"
-          title="{{ field.label || 'Date picker' }}"
           [attr.aria-label]="field.label || 'Date picker'"
-          disabled
+          [(ngModel)]="formValues[field.id]"
         />
+
+        <!-- Time Picker -->
         <input
           *ngSwitchCase="FieldType.TIME_PICKER"
           type="time"
           class="field-control"
-          title="{{ field.label || 'Time picker' }}"
           [attr.aria-label]="field.label || 'Time picker'"
-          disabled
+          [(ngModel)]="formValues[field.id]"
         />
+
+        <!-- File Upload -->
         <div *ngSwitchCase="FieldType.UPLOAD_FILE" class="field-upload">
           <span>Upload file</span>
         </div>
+
+        <!-- Star Rating -->
         <div *ngSwitchCase="FieldType.RATING_STAR" class="field-rating">
-          <span *ngFor="let star of getRatingArray(field.maxRating ?? 5)" class="rating-star">★</span>
+          <span
+            *ngFor="let star of getRatingArray(field.maxRating ?? 5)"
+            class="rating-star"
+            [class.rating-active]="star <= formValues[field.id]"
+            (click)="setRating(field.id, star)"
+          >★</span>
         </div>
+
+        <!-- Number Rating -->
         <div *ngSwitchCase="FieldType.RATING_NUMBER" class="field-rating">
-          <span *ngFor="let num of getRatingArray(field.maxRating ?? 10)" class="rating-number">{{ num }}</span>
+          <span
+            *ngFor="let num of getRatingArray(field.maxRating ?? 10)"
+            class="rating-number"
+            [class.rating-active]="num <= formValues[field.id]"
+            (click)="setNumberRating(field.id, num)"
+          >{{ num }}</span>
         </div>
+
+        <!-- Image -->
         <div *ngSwitchCase="FieldType.IMAGE" class="field-image">
           <img *ngIf="field.imageUrl" [src]="field.imageUrl" alt="Preview image" />
           <div *ngIf="!field.imageUrl" class="image-placeholder">Image preview</div>
         </div>
+
+        <!-- Terms & Conditions -->
         <label *ngSwitchCase="FieldType.TERMS_CONDITION" class="field-option">
-          <input type="checkbox" disabled />
+          <input
+            type="checkbox"
+            [(ngModel)]="formValues[field.id]"
+          />
           <span>{{ field.termsText || 'I agree to the terms and conditions.' }}</span>
         </label>
       </ng-container>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="submit-section">
+      <button
+        class="btn-submit"
+        (click)="onSubmit()"
+        [disabled]="isSubmitting"
+        [class.btn-loading]="isSubmitting"
+      >
+        <span class="btn-spinner" *ngIf="isSubmitting"></span>
+        <span>{{ isSubmitting ? 'Submitting...' : 'Submit' }}</span>
+      </button>
     </div>
   </div>
 </div>

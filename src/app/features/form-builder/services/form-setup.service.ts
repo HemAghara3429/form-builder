@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
+import { tap, map } from 'rxjs/operators';
 import {
   FormSetupData,
   BranchOption,
@@ -15,7 +16,8 @@ const STORAGE_KEY = 'form-setup-data';   //local storage key for the store data 
   providedIn: 'root',
 })
 export class FormSetupService {
-  private readonly API_URL = '/api/forms';
+  //backend API base URL (Laravel server running on port 8000).
+  private readonly API_URL = 'http://localhost:8000/api/forms';
   private formSetupData$ = new BehaviorSubject<FormSetupData | null>(this.getStoredFormSetupData());
 
   //branch option data for the form
@@ -64,16 +66,21 @@ export class FormSetupService {
       observer.complete();
     });
   }
+
+  //save form setup data to the backend database via POST API.
+  //also stores locally in localStorage and BehaviorSubject for preview page access.
   saveFormSetup(formData: FormSetupData): Observable<FormSetupData> {
-    // Replace with actual API call
-    // return this.http.post<FormSetupData>(`${this.API_URL}/setup`, formData);
-    return new Observable((observer) => {
-      const savedData = { ...formData, id: 'new-' + Date.now() };
-      this.storeFormSetupData(savedData);
-      this.formSetupData$.next(savedData);
-      observer.next(savedData);
-      observer.complete();
-    });
+    return this.http.post<{ message: string; data: any }>(this.API_URL, formData).pipe(
+      map((response) => {
+        const savedData: FormSetupData = { ...formData, id: response.data.id };
+        return savedData;
+      }),
+      tap((savedData) => {
+        //also save to localStorage so preview page can read the form name.
+        this.storeFormSetupData(savedData);
+        this.formSetupData$.next(savedData);
+      })
+    );
   }
   getFormSetupData(): Observable<FormSetupData | null> {
     return this.formSetupData$.asObservable();

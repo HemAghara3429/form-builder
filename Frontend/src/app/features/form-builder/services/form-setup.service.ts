@@ -13,7 +13,7 @@ import {
 const STORAGE_KEY = 'form-setup-data'; // localStorage key for form setup data
 
 // Laravel backend API – only the store endpoint is used
-const API_URL = 'http://localhost:8000/api/forms';
+const API_URL = 'http://127.0.0.1:8000/api/forms';
 
 // Shape of the API response wrapper returned by Laravel
 interface ApiResponse<T> {

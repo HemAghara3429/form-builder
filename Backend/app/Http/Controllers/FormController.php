@@ -3,11 +3,32 @@
 namespace App\Http\Controllers;
 
 use App\Models\Form;
+use App\Models\FormSubmission;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 
 class FormController extends BaseController
 {
+    //submit form data from the preview page.
+    //this method receives user-entered values and saves them to the form_submissions table.
+    public function submitForm(Request $request)
+    {
+        $request->validate([
+            'form_name'      => 'required|string|max:255',
+            'submitted_data' => 'required|array',
+        ]);
+
+        $submission = FormSubmission::create([
+            'form_name'      => $request->input('form_name'),
+            'submitted_data' => $request->input('submitted_data'),
+        ]);
+
+        return response()->json([
+            'message' => 'Form submitted successfully!',
+            'data'    => $submission,
+        ], 201);
+    }
+
     public function store(Request $request)
     {
 

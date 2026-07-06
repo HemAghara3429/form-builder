@@ -1,9 +1,12 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { map } from 'rxjs';
 import { FieldType, FormField } from '../../models/form-field.model';
 import { FormSetupService } from '../../services/form-setup.service';
+import { FormSubmissionService } from '../../services/form-submission.service';
+import { FormBuilderStateService } from '../../services/form-builder';
 
 const PREVIEW_VALUES_KEY = 'form-builder-preview-values';
 const PREVIEW_SUBMISSIONS_KEY = 'form-builder-preview-submissions';
@@ -20,7 +23,12 @@ export class PreviewPanel implements OnInit, OnChanges {
   formValues: Record<string, unknown> = {};
   successMessage = '';
 
-  constructor(private readonly formSetupService: FormSetupService) {}
+  constructor(
+    private readonly formSetupService: FormSetupService,
+    private readonly formSubmissionService: FormSubmissionService,
+    private readonly formBuilderStateService: FormBuilderStateService,
+    private readonly router: Router
+  ) { }
 
   ngOnInit(): void {
     this.formValues = this.loadSavedValues();
@@ -85,12 +93,44 @@ export class PreviewPanel implements OnInit, OnChanges {
   submitForm(): void {
     this.successMessage = '';
     this.saveValues();
-    const submission = {
-      submittedAt: new Date().toISOString(),
-      values: this.buildSubmissionValues(),
-    };
-    this.saveSubmission(submission);
-    this.successMessage = 'Form submitted successfully. Your answers have been saved locally.';
+    const submissionValues = this.buildSubmissionValues();
+
+    // Get current form name to label the submission in the DB
+    this.formSetupService.getFormSetupData().subscribe((data) => {
+      const formName = data?.formName?.trim() || 'Untitled Form';
+
+      this.formSubmissionService.submitForm(formName, submissionValues).subscribe({
+        next: (response) => {
+          console.log('Submission saved to database:', response);
+
+          // Also save a copy locally
+          const submission = {
+            submittedAt: new Date().toISOString(),
+            values: submissionValues,
+          };
+          this.saveSubmission(submission);
+
+          this.successMessage = 'Your data is successfully saved!';
+
+          // Clear form setup configuration, builder fields, and user values
+          this.formSetupService.clearFormSetupData();
+          this.formBuilderStateService.clearFields();
+          try {
+            localStorage.removeItem(PREVIEW_VALUES_KEY);
+          } catch { }
+          this.formValues = {};
+
+          // Redirect to the setup page after 1.5 seconds
+          setTimeout(() => {
+            this.router.navigate(['/form-builder/setup']);
+          }, 1500);
+        },
+        error: (error) => {
+          console.error('Error saving submission to database:', error);
+          this.successMessage = 'Failed to submit form to database. Please ensure the backend server is running.';
+        }
+      });
+    });
   }
 
   private buildSubmissionValues(): Record<string, unknown> {
@@ -137,7 +177,7 @@ export class PreviewPanel implements OnInit, OnChanges {
   private saveValues(): void {
     try {
       localStorage.setItem(PREVIEW_VALUES_KEY, JSON.stringify(this.formValues));
-    } catch {}
+    } catch { }
   }
 
   private loadSavedValues(): Record<string, unknown> {
@@ -164,6 +204,6 @@ export class PreviewPanel implements OnInit, OnChanges {
         PREVIEW_SUBMISSIONS_KEY,
         JSON.stringify([...submissions, submission])
       );
-    } catch {}
+    } catch { }
   }
 }
