@@ -117,7 +117,128 @@ export class PreviewPanel implements OnInit, OnChanges {
   //validation form 
   validateForm(): boolean {
     this.errors = {};
-    return true;
+    let isValid = true;
+
+    for (const field of this.fields) {
+      const value = this.formValues[field.id];
+
+      // 1. Check if required fields are filled
+      if (field.required) {
+        let hasValue = false;
+        
+        if (field.type === FieldType.CHECKBOX) {
+          hasValue = Array.isArray(value) && value.length > 0;
+        } else if (field.type === FieldType.TERMS_CONDITION) {
+          hasValue = value === true;
+        } else if (field.type === FieldType.UPLOAD_FILE) {
+          hasValue = !!value && typeof value === 'object' && 'name' in value && !!(value as { name: string }).name;
+        } else if (field.type === FieldType.RATING_STAR || field.type === FieldType.RATING_NUMBER) {
+          hasValue = value !== undefined && value !== null && value !== '';
+        } else {
+          hasValue = value !== undefined && value !== null && String(value).trim() !== '';
+        }
+
+        if (!hasValue) {
+          this.errors[field.id] = 'This field is required.';
+          isValid = false;
+          continue; // skip other validations for this field since it's empty
+        }
+      }
+
+      // 2. Extra validations if showValidation is enabled and field has value
+      if (field.showValidation && value !== undefined && value !== null) {
+        const rules = field.validationRules;
+        if (rules) {
+          const strValue = String(value).trim();
+          
+          if (strValue !== '') {
+            // Min Length check
+            if (rules.minLength !== undefined && rules.minLength !== null && rules.minLength > 0) {
+              if (strValue.length < rules.minLength) {
+                this.errors[field.id] = `Must be at least ${rules.minLength} characters.`;
+                isValid = false;
+                continue;
+              }
+            }
+
+            // Max Length check
+            if (rules.maxLength !== undefined && rules.maxLength !== null && rules.maxLength > 0) {
+              if (strValue.length > rules.maxLength) {
+                this.errors[field.id] = `Cannot exceed ${rules.maxLength} characters.`;
+                isValid = false;
+                continue;
+              }
+            }
+
+            // Format validations (email, url, phone, custom)
+            if (rules.patternType && rules.patternType !== 'none') {
+              if (rules.patternType === 'email') {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(strValue)) {
+                  this.errors[field.id] = 'Please enter a valid email address.';
+                  isValid = false;
+                  continue;
+                }
+              } else if (rules.patternType === 'url') {
+                const urlRegex = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([\/\w .-]*)*\/?$/;
+                if (!urlRegex.test(strValue)) {
+                  this.errors[field.id] = 'Please enter a valid URL.';
+                  isValid = false;
+                  continue;
+                }
+              } else if (rules.patternType === 'phone') {
+                const phoneRegex = /^\+?[\d\s-]{7,15}$/;
+                if (!phoneRegex.test(strValue)) {
+                  this.errors[field.id] = 'Please enter a valid phone number.';
+                  isValid = false;
+                  continue;
+                }
+              } else if (rules.patternType === 'custom' && rules.customRegex) {
+                try {
+                  const customReg = new RegExp(rules.customRegex);
+                  if (!customReg.test(strValue)) {
+                    this.errors[field.id] = rules.customErrorMessage || 'Invalid format.';
+                    isValid = false;
+                    continue;
+                  }
+                } catch (e) {
+                  console.error('Invalid custom regex format', e);
+                }
+              }
+            }
+          }
+
+          // File upload validations (size and allowed extensions)
+          if (field.type === FieldType.UPLOAD_FILE && typeof value === 'object' && value !== null) {
+            const fileVal = value as { name?: string; size?: number };
+            if (fileVal.name) {
+              // File Extension check
+              if (rules.allowedExtensions) {
+                const ext = fileVal.name.split('.').pop()?.toLowerCase();
+                const allowed = rules.allowedExtensions.split(',').map(e => e.trim().toLowerCase());
+                if (ext && !allowed.includes(ext)) {
+                  this.errors[field.id] = `Only ${rules.allowedExtensions} files are allowed.`;
+                  isValid = false;
+                  continue;
+                }
+              }
+
+              // File Size check (rules.maxFileSize is in MB)
+              if (rules.maxFileSize !== undefined && rules.maxFileSize !== null && fileVal.size) {
+                const maxBytes = rules.maxFileSize * 1024 * 1024;
+                if (fileVal.size > maxBytes) {
+                  this.errors[field.id] = `File size must be less than ${rules.maxFileSize}MB.`;
+                  isValid = false;
+                  continue;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return isValid;
   }
 
   submitForm(): void {
